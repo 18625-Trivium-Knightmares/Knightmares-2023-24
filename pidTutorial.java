@@ -11,7 +11,7 @@ public class pidTutorial extends LinearOpMode {
 
     DcMotorEx motor;
 
-    public static double ticksPerRev = 3895.9;
+    public static double ticksPerRev = 537.7;
     public static double integralSum = 0;
     public static double Kp = 0;
     public static double Ki = 0;

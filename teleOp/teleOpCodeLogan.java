@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
-    @TeleOp(name = "Tank Drive")
+@TeleOp(name = "Tank Drive")
 
 public class teleOpCodeLogan extends LinearOpMode {
     /**
@@ -53,7 +53,7 @@ public class teleOpCodeLogan extends LinearOpMode {
                 BR.setPower(gamepad1.right_stick_y * speed);
                 FL.setPower(gamepad1.left_stick_y * speed);
                 BL.setPower(gamepad1.left_stick_y * speed);
-                
+
                 if (gamepad1.dpad_up){
                     AM.setPower(0.5);
                 }
