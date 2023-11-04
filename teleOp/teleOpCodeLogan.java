@@ -17,7 +17,8 @@ public class teleOpCodeLogan extends LinearOpMode {
     DcMotor FR, FL, BR, BL, AM, HM, CM, SM; // All of the motors
     Servo Claw;
 
-    double speed = 0.5;
+    double speed = 1;
+    double halfspeed = 0.5; //This was for the faster moving parts (Chain motor)
     double openClaw = 0.001;
     double closeClaw = 1;
     @Override
@@ -28,14 +29,14 @@ public class teleOpCodeLogan extends LinearOpMode {
         BR = hardwareMap.dcMotor.get("rightBack");
         BL = hardwareMap.dcMotor.get("leftBack");
         CM = hardwareMap.dcMotor.get("ch");
-        HM = hardwareMap.dcMotor.get("hoister");
+        HM = hardwareMap.dcMotor.get("hoist");
         AM = hardwareMap.dcMotor.get("actuator");
         SM = hardwareMap.dcMotor.get("Slide");
 
         Claw = hardwareMap.servo.get("Claw");
 
-        FL.setDirection((DcMotorSimple.Direction.REVERSE));
-        BL.setDirection((DcMotorSimple.Direction.REVERSE));
+        FR.setDirection((DcMotorSimple.Direction.REVERSE));
+        BR.setDirection((DcMotorSimple.Direction.REVERSE));
 
         telemetry.addData(">", "Press Play to start op mode"); // Will add stuff to the driver hub screen
         telemetry.update(); // Will update the driver hub screen so that the above will appear
@@ -52,7 +53,7 @@ public class teleOpCodeLogan extends LinearOpMode {
                 BR.setPower(gamepad1.right_stick_y * speed);
                 FL.setPower(gamepad1.left_stick_y * speed);
                 BL.setPower(gamepad1.left_stick_y * speed);
-
+                
                 if (gamepad1.dpad_up){
                     AM.setPower(0.5);
                 }
@@ -77,11 +78,30 @@ public class teleOpCodeLogan extends LinearOpMode {
                 else{
                     HM.setPower(0);
                 }
+                //This is for strafing
+                if(gamepad1.right_trigger>0){
+                    FR.setPower(-speed);
+                    BL.setPower(speed);
+                    BR.setPower(speed);
+                    FL.setPower(-speed);
+                }
+                else if(gamepad1.left_trigger>0){
+                    FR.setPower(speed);
+                    BL.setPower(-speed);
+                    BR.setPower(-speed);
+                    FL.setPower(speed);
+                }
+                else{
+                    FR.setPower(0);
+                    BL.setPower(0);
+                    BR.setPower(0);
+                    FL.setPower(0);
+                }
                 /**
                  * ALL UNDER GAMEPAD 2
                  */
-                CM.setPower(gamepad2.right_stick_y * speed);
-                SM.setPower(gamepad2.left_stick_y * speed);
+                CM.setPower(gamepad2.right_stick_y * halfspeed);
+                SM.setPower(gamepad2.left_stick_y * -speed);
                 if(gamepad2.left_trigger>0){
                     Claw.setPosition(openClaw);
                 }
