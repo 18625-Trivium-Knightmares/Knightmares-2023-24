@@ -1,1 +1,1 @@
-git rm unwanted-file.txt
+git rm test.java
