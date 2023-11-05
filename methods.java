@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
 public class methods extends LinearOpMode {
@@ -50,6 +51,20 @@ public class methods extends LinearOpMode {
         FL.setPower(0);
     }
     public void runOpMode() throws InterruptedException{
+        // Assigning all of the servos and motors
+        FR = hardwareMap.dcMotor.get("rightFront");
+        FL = hardwareMap.dcMotor.get("leftFront");
+        BR = hardwareMap.dcMotor.get("rightBack");
+        BL = hardwareMap.dcMotor.get("leftBack");
+        CM = hardwareMap.dcMotor.get("ch");
+        HM = hardwareMap.dcMotor.get("hoist");
+        AM = hardwareMap.dcMotor.get("actuator");
+        SM = hardwareMap.dcMotor.get("Slide");
+
+        Claw = hardwareMap.servo.get("Claw");
+
+        FR.setDirection((DcMotorSimple.Direction.REVERSE));
+        BR.setDirection((DcMotorSimple.Direction.REVERSE));
     }
 
 }

@@ -17,8 +17,9 @@ public class teleOpCodeLogan extends LinearOpMode {
     DcMotor FR, FL, BR, BL, AM, HM, CM, SM; // All of the motors
     Servo Claw;
 
-    double speed = 1;
+    double speed = 0.8;
     double halfspeed = 0.5; //This was for the faster moving parts (Chain motor)
+    double fourthspeed = 0.25;
     double openClaw = 0.001;
     double closeClaw = 1;
     @Override
@@ -51,17 +52,17 @@ public class teleOpCodeLogan extends LinearOpMode {
                 // Basic robot moving controls
                 FR.setPower(gamepad1.right_stick_y * speed);
                 BR.setPower(gamepad1.right_stick_y * speed);
-                FL.setPower(gamepad1.left_stick_y * speed);
+                FL.setPower(gamepad1.left_stick_y);
                 BL.setPower(gamepad1.left_stick_y * speed);
 
                 if (gamepad1.dpad_up){
-                    AM.setPower(0.5);
+                    AM.setPower(1);
                 }
                 else{
                     AM.setPower(0);
                 }
                 if (gamepad1.dpad_down){
-                    AM.setPower(-0.5);
+                    AM.setPower(-1);
                 }
                 else{
                     AM.setPower(0);
@@ -83,13 +84,13 @@ public class teleOpCodeLogan extends LinearOpMode {
                     FR.setPower(-speed);
                     BL.setPower(speed);
                     BR.setPower(speed);
-                    FL.setPower(-speed);
+                    FL.setPower(-1);
                 }
                 else if(gamepad1.left_trigger>0){
                     FR.setPower(speed);
                     BL.setPower(-speed);
                     BR.setPower(-speed);
-                    FL.setPower(speed);
+                    FL.setPower(1);
                 }
                 else{
                     FR.setPower(0);
@@ -101,7 +102,7 @@ public class teleOpCodeLogan extends LinearOpMode {
                  * ALL UNDER GAMEPAD 2
                  */
                 CM.setPower(gamepad2.right_stick_y * halfspeed);
-                SM.setPower(gamepad2.left_stick_y * -speed);
+                SM.setPower(gamepad2.left_stick_y * -fourthspeed);
                 if(gamepad2.left_trigger>0){
                     Claw.setPosition(openClaw);
                 }
