@@ -16,7 +16,7 @@ public class teleOpCodeLogan extends LinearOpMode {
 
     DcMotor FR, FL, BR, BL, AM, HM, CM, SM; // All of the motors
     double ticks = 384.5;
-    double ticks2 = 444;
+    double ticks2 = 537.7;
     double newTarget;
     Servo Claw;
 
@@ -67,8 +67,10 @@ public class teleOpCodeLogan extends LinearOpMode {
                 }
                 if (gamepad1.dpad_left) {
                     HM.setPower(0.5);
+//                    encoder2(0.5);
                 } else if (gamepad1.dpad_right) {
                     HM.setPower(-0.5);
+//                    encoder2(0);
                 } else {
                     HM.setPower(0);
                 }
@@ -102,8 +104,7 @@ public class teleOpCodeLogan extends LinearOpMode {
                 }
                 //SM.setPower(gamepad2.left_stick_y * -speed); THESE ARE THE  OLD GAMEPAD 2 CONTROLS
                 if (gamepad1.y) {
-                    encoder(2);
-//                    SM.setPower(speed);
+                    SM.setPower(speed);
                 }
 
                 if (gamepad1.a) {
@@ -120,8 +121,7 @@ public class teleOpCodeLogan extends LinearOpMode {
             }
         }
     }
-   public void encoder(int turnage){
-//        SM.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    /*public void encoder(int turnage){
         SM.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         newTarget = ticks/turnage;
         SM.setTargetPosition((int)newTarget);
@@ -133,12 +133,16 @@ public class teleOpCodeLogan extends LinearOpMode {
         SM.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
-    public void encoder2(int turnage2){
-        newTarget = ticks2/turnage2;
-        CM.setTargetPosition((int)newTarget);
-        CM.setPower(speed);
-        CM.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-    }
+    public void encoder2(double turnage2){
+        HM.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        newTarget = ticks2*turnage2;
+        HM.setTargetPosition((int)newTarget);
+        HM.setPower(speed);
+        HM.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        while (HM.isBusy()) {
+        }
+        HM.setPower(0);
+        HM.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+    }*/
 }
 //CM ENCODER!!!!!!!!!
-
