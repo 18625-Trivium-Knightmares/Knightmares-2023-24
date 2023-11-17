@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.auto;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -6,6 +6,11 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+
+import org.openftc.easyopencv.OpenCvCamera;
+import org.openftc.easyopencv.OpenCvCameraFactory;
+import org.openftc.easyopencv.OpenCvCameraRotation;
+import org.openftc.easyopencv.OpenCvInternalCamera;
 
 @Autonomous
 
@@ -139,8 +144,8 @@ public class autonomousCode extends LinearOpMode{
             FR.setPower(0);
             BL.setPower(0);
             BR.setPower(0);
-        exitEncoders();
-        resetEncoders();
+            exitEncoders();
+            resetEncoders();
         } else if (direction == "left") {
 
             startEncoders();
@@ -172,35 +177,9 @@ public class autonomousCode extends LinearOpMode{
         }
     }
 
-        /**if (tIme != 0) { // IF THIS IS SET TO ANY NUMBER OTHER THAN 0 IT WILL MAKE IT SO THAT IT
-            sleep(tIme); // TURNS FOR HOWEVER LONG IT IS SET TO, IF IT'S 0 IT WILL JUST SET
-            // THE MOTORS TO THE POWER INDEFINITELY
-            FR.setPower(0);
-            FL.setPower(0);
-            BR.setPower(0);
-            BL.setPower(0);
-        }
-    }**/
-
-
-     // Methods for encoders
-     // example for distance:
-    //public void convert(double target) {
-        //double target = encodersTarget.calculateToPlaceDistance(5);
-        //encoders(target);
-
-
-
-     // will go forward 5 inches at power 25%
-
-     // example for rotations:
-      // double target = encodersTarget.calculateToPlaceRotations(1.5);
-      //encoders(target);
-     // will go forward 1.5 rotations
-     // how many inches you want the thing to go * (537.7/(3.7795276*4))
-     public int convert(double inch) {
-          inch = inch * (537.7/15.11*1104);
-         return((int) inch);
+    public int convert(double inch) {
+        inch = inch * (537.7/15.11*1104);
+        return((int) inch);
     }
     public void encoders(int targetToPlace) {
 
@@ -232,8 +211,15 @@ public class autonomousCode extends LinearOpMode{
 
     DcMotor FR,FL,BR,BL,AM, HM,CM,SM;
     Servo Claw;
+
+    int width = 320;
+    int height = 240;
+
+    colorDetectionAuto detector = new colorDetectionAuto(width);
+    OpenCvCamera webcam;
+
     @Override
-    public void runOpMode()throws InterruptedException {
+    public void runOpMode() throws InterruptedException {
         FR = hardwareMap.dcMotor.get("Front Right");
         FL = hardwareMap.dcMotor.get("Front Left");
         BR = hardwareMap.dcMotor.get("Back Right");
@@ -243,6 +229,18 @@ public class autonomousCode extends LinearOpMode{
         AM = hardwareMap.dcMotor.get("actuator");
         SM = hardwareMap.dcMotor.get("Slide");
         Claw = hardwareMap.servo.get("Claw");
+
+        /**
+         * camera stuff
+         */
+        WebcamName webcamName = hardwareMap.get(WebcamName.class, "webcam");
+        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        webcam = OpenCvCameraFactory.getInstance().createWebcam(webcamName, cameraMonitorViewId);
+
+        webcam.openCameraDevice();
+        webcam.setPipeline(detector);
+        webcam.startStreaming(width, height, OpenCvCameraRotation.SIDEWAYS_LEFT);
+
 
         FL.setDirection((DcMotorSimple.Direction.REVERSE));
         BL.setDirection((DcMotorSimple.Direction.REVERSE));
@@ -256,25 +254,27 @@ public class autonomousCode extends LinearOpMode{
 
         waitForStart();
 
-        int x = convert(22);
-        slide("left",x); //Go towards tape
-            sleep(1000);
+        /*
+        starts by going 40 inches forwards
+         */
+        int go1 = convert(40);
+        encoders(go1);
 
-        /** IF YOU NEED TO TURN 90 DEGREES **/
-        //turn(2000,"left");
-        /**IF YOU NEED TO TURN 180 DEGREES **/
-        //turn(5000,"left");
-        CM.setPower(-0.2);
-                wait(2000);
-        Claw.setPosition(openClaw);
-                wait(2000);
-        /** IF YOU NEED TO TURN 90 DEGREES **/
-        //turn(2000,"left");
-        /**IF YOU NEED TO TURN 180 DEGREES **/
-        //turn(5000,"left");
+        /*
+        detects which side and turns that direction (prolly wont detect the middle
+         */
+        colorDetectionAuto.SkystoneLocation location = detector.getLocation();
+        if (location == colorDetectionAuto.SkystoneLocation.RIGHT) {
+            telemetry.addLine("it's on the right");
+            turn(500, "right");
+        } else if (location == colorDetectionAuto.SkystoneLocation.LEFT){
+            telemetry.addLine("it's on the left");
+            turn(500, "left");
+        } else {
+            telemetry.addLine("middle?");
         }
+    }
 }
-
 
 
 
