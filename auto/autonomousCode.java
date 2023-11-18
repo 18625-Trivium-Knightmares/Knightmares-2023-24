@@ -1,65 +1,54 @@
-package org.firstinspires.ftc.teamcode.auto;
-
+package org.firstinspires.ftc.teamcode.teleOp;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-
-import org.openftc.easyopencv.OpenCvCamera;
-import org.openftc.easyopencv.OpenCvCameraFactory;
-import org.openftc.easyopencv.OpenCvCameraRotation;
-import org.openftc.easyopencv.OpenCvInternalCamera;
-
-@Autonomous
-
+@TeleOp
 public class autonomousCode extends LinearOpMode{
-    // start encoders
-    public void startEncoders() {
+    public void startEncoders() {                                             /** start encoders **/
         FL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         FR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         BL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         BR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
-
-    // exit encoders
-    public void exitEncoders() {
+    public void exitEncoders() {                                               /** exit encoders **/
         FL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         FR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         BL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         BR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
-
-    // restart encoders
-    public void resetEncoders() {
+    public void resetEncoders() {                                           /** restart encoders **/
         FL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         FR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         BL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         BR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
-
-
-    /**
-     *Go forward
-     *
-     * example: goForward(1000, 0.95) will go forward at 95% power for 1 second
-     * example: goForward(0, 0.95) will go forward at 95% power indefinitely
-     */
-    public void goForward(int tIme, int power) {
-        FR.setPower(power);
-        FL.setPower(power);
-        BR.setPower(power);
-        BL.setPower(power);
-
-        if (tIme != 0) { // IF THIS IS SET TO ANY NUMBER OTHER THAN 0 IT WILL MAKE IT SO THAT IT GOES
-            sleep(tIme); // FORWARD FOR HOWEVER LONG IT IS SET TO, IF IT'S 0 IT WILL JUST SET
-            // THE MOTORS TO THE POWER INDEFINITELY
-            FR.setPower(0);
-            FL.setPower(0);
-            BR.setPower(0);
-            BL.setPower(0);
+    public void goForward(int targetToPlace) {                             /** Go Forward Method **/
+        resetEncoders();
+        startEncoders();
+            FL.setTargetPosition(targetToPlace);
+            FR.setTargetPosition(targetToPlace);
+            BL.setTargetPosition(targetToPlace);
+            BR.setTargetPosition(targetToPlace);
+        FL.setPower(0.5);
+        FR.setPower(0.5);
+        BL.setPower(0.5);
+        BR.setPower(0.5);
+            FL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            FR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            BL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            BR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        while (FR.isBusy() || FL.isBusy() || BR.isBusy() || BL.isBusy()) {
         }
+        FL.setPower(0);
+        FR.setPower(0);
+        BL.setPower(0);
+        BR.setPower(0);
+            exitEncoders();
+            resetEncoders();
     }
 
     /**
@@ -68,20 +57,35 @@ public class autonomousCode extends LinearOpMode{
      * example: goBackward(1000, 0.95) will go backward at 95% power for 1 second
      * example: goBackward(0, 0.95) will go backward at 95% power indefinitely
      */
-    public void goBackward(int tIme, double power) {
-        FR.setPower(-power);
-        FL.setPower(-power);
-        BR.setPower(-power);
-        BL.setPower(-power);
+    public void goBackward(int targetToPlace) {
+        resetEncoders();
+        startEncoders();
 
-        if (tIme != 0) { // IF THIS IS SET TO ANY NUMBER OTHER THAN 0 IT WILL MAKE IT SO THAT IT GOES
-            sleep(tIme); // BACKWARD FOR HOWEVER LONG IT IS SET TO, IF IT'S 0 IT WILL JUST SET
-            // THE MOTORS TO THE POWER INDEFINITELY
-            FR.setPower(0);
-            FL.setPower(0);
-            BR.setPower(0);
-            BL.setPower(0);
+
+        FL.setTargetPosition(-targetToPlace);
+        FR.setTargetPosition(-targetToPlace);
+        BL.setTargetPosition(-targetToPlace);
+        BR.setTargetPosition(-targetToPlace);
+
+        FL.setPower(0.5);
+        FR.setPower(0.5);
+        BL.setPower(0.5);
+        BR.setPower(0.5);
+
+        FL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        FR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        BL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        BR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        while (FR.isBusy() || FL.isBusy() || BR.isBusy() || BL.isBusy()) {
         }
+
+        FL.setPower(0);
+        FR.setPower(0);
+        BL.setPower(0);
+        BR.setPower(0);
+        exitEncoders();
+        resetEncoders();
     }
 
     /**
@@ -119,18 +123,18 @@ public class autonomousCode extends LinearOpMode{
      */
     public void slide(String direction, int targetToPlace) {
         if (direction == "right") {
-
+            resetEncoders();
             startEncoders();
 
             FL.setTargetPosition(targetToPlace);
-            FR.setTargetPosition(targetToPlace);
-            BL.setTargetPosition(targetToPlace);
+            FR.setTargetPosition(-targetToPlace);
+            BL.setTargetPosition(-targetToPlace);
             BR.setTargetPosition(targetToPlace);
 
-            FL.setPower(0.25);
-            FR.setPower(-0.25);
-            BL.setPower(-0.25);
-            BR.setPower(0.25);
+            FL.setPower(0.5);
+            FR.setPower(0.5);
+            BL.setPower(0.5);
+            BR.setPower(0.5);
 
             FL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             FR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -147,18 +151,18 @@ public class autonomousCode extends LinearOpMode{
             exitEncoders();
             resetEncoders();
         } else if (direction == "left") {
-
+            resetEncoders();
             startEncoders();
 
-            FL.setTargetPosition(targetToPlace);
+            FL.setTargetPosition(-targetToPlace);
             FR.setTargetPosition(targetToPlace);
             BL.setTargetPosition(targetToPlace);
-            BR.setTargetPosition(targetToPlace);
+            BR.setTargetPosition(-targetToPlace);
 
-            FL.setPower(-0.25);
-            FR.setPower(0.25);
-            BL.setPower(0.25);
-            BR.setPower(-0.25);
+            FL.setPower(0.5);
+            FR.setPower(0.5);
+            BL.setPower(0.5);
+            BR.setPower(0.5);
 
             FL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             FR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -177,104 +181,93 @@ public class autonomousCode extends LinearOpMode{
         }
     }
 
+    /**if (tIme != 0) { // IF THIS IS SET TO ANY NUMBER OTHER THAN 0 IT WILL MAKE IT SO THAT IT
+     sleep(tIme); // TURNS FOR HOWEVER LONG IT IS SET TO, IF IT'S 0 IT WILL JUST SET
+     // THE MOTORS TO THE POWER INDEFINITELY
+     FR.setPower(0);
+     FL.setPower(0);
+     BR.setPower(0);
+     BL.setPower(0);
+     }
+     }**/
+
+
+    // Methods for encoders
+    // example for distance:
+    //public void convert(double target) {
+    //double target = encodersTarget.calculateToPlaceDistance(5);
+    //encoders(target);
+
+
+
+    // will go forward 5 inches at power 25%
+
+    // example for rotations:
+    // double target = encodersTarget.calculateToPlaceRotations(1.5);
+    //encoders(target);
+    // will go forward 1.5 rotations
+    // how many inches you want the thing to go * (537.7/(3.7795276*4))
     public int convert(double inch) {
-        inch = inch * (537.7/15.11*1104);
-        return((int) inch);
+        double newinch = inch * -42.75; //1026 is the value for 24 inches, aka 2 feet
+        return ((int)newinch);
     }
-    public void encoders(int targetToPlace) {
-
-        startEncoders();
-
-        FL.setTargetPosition(targetToPlace);
-        FR.setTargetPosition(targetToPlace);
-        BL.setTargetPosition(targetToPlace);
-        BR.setTargetPosition(targetToPlace);
-
-        FL.setPower(0.25);
-        FR.setPower(0.25);
-        BL.setPower(0.25);
-        BR.setPower(0.25);
-
-        FL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        FR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        BL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        BR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        while (FR.isBusy() || FL.isBusy() || BR.isBusy() || BL.isBusy()) {
-        }
-
-        FL.setPower(0);
-        FR.setPower(0);
-        BL.setPower(0);
-        BR.setPower(0);
-    }
-
     DcMotor FR,FL,BR,BL,AM, HM,CM,SM;
     Servo Claw;
-
-    int width = 320;
-    int height = 240;
-
-    colorDetectionAuto detector = new colorDetectionAuto(width);
-    OpenCvCamera webcam;
-
     @Override
-    public void runOpMode() throws InterruptedException {
-        FR = hardwareMap.dcMotor.get("Front Right");
-        FL = hardwareMap.dcMotor.get("Front Left");
-        BR = hardwareMap.dcMotor.get("Back Right");
-        BL = hardwareMap.dcMotor.get("Back Left");
+    public void runOpMode()throws InterruptedException {
+        FR = hardwareMap.dcMotor.get("rightFront");
+        FL = hardwareMap.dcMotor.get("Buh");
+        BR = hardwareMap.dcMotor.get("rightBack");
+        BL = hardwareMap.dcMotor.get("Bruh");
         CM = hardwareMap.dcMotor.get("ch");
         HM = hardwareMap.dcMotor.get("hoist");
         AM = hardwareMap.dcMotor.get("actuator");
         SM = hardwareMap.dcMotor.get("Slide");
         Claw = hardwareMap.servo.get("Claw");
 
-        /**
-         * camera stuff
-         */
-        WebcamName webcamName = hardwareMap.get(WebcamName.class, "webcam");
-        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        webcam = OpenCvCameraFactory.getInstance().createWebcam(webcamName, cameraMonitorViewId);
 
-        webcam.openCameraDevice();
-        webcam.setPipeline(detector);
-        webcam.startStreaming(width, height, OpenCvCameraRotation.SIDEWAYS_LEFT);
+        FR.setDirection((DcMotorSimple.Direction.REVERSE));
 
-
-        FL.setDirection((DcMotorSimple.Direction.REVERSE));
-        BL.setDirection((DcMotorSimple.Direction.REVERSE));
         double openClaw = 0.001;
         double closeClaw = 1;
 
-        Claw.setPosition(closeClaw);
+       
 
-        WebcamName webcam;
+        //WebcamName webcam;
 
-
+      
         waitForStart();
 
-        /*
-        starts by going 40 inches forwards
-         */
-        int go1 = convert(40);
-        encoders(go1);
+        int x = convert(24);
+        slide("left",x); //Sliding a pixel onto the center spike mark
+            sleep(1000);
+        int y = convert(8); 
+        goBackward(y);
+            sleep(1000);
+                                                                                    //goBackward(x);
+                                                                                      //sleep(5000);
 
-        /*
-        detects which side and turns that direction (prolly wont detect the middle
-         */
-        colorDetectionAuto.SkystoneLocation location = detector.getLocation();
-        if (location == colorDetectionAuto.SkystoneLocation.RIGHT) {
-            telemetry.addLine("it's on the right");
-            turn(500, "right");
-        } else if (location == colorDetectionAuto.SkystoneLocation.LEFT){
-            telemetry.addLine("it's on the left");
-            turn(500, "left");
-        } else {
-            telemetry.addLine("middle?");
-        }
+        int z = convert(24*3);
+        goBackward(z); //Straffing from spike marks to Backboard
+            sleep(500);
+                                                                                 //slide("right",x);
+                                                                                      //sleep(5000);
+        //turn(2000,"left"); //Turning towards Backdrop
+            //sleep(1000);
+        //CM.setPower(0.2); //Extending arm
+            //sleep(750);
+        //Claw.setPosition(openClaw); //Releasing the pre-loaded pixel
+            //sleep(1000);
+        //CM.setPower(-0.2); //Tucking in arm
+            //sleep(650);
+        //int a = convert(24*0.5);
+        //goBackward(a); //Inching away from Backboard
+            //sleep(1000);
+        slide("right",x); //Straffing from Backboard to Parking spot
+            sleep(1000);
+        goBackward(x); //Park
     }
 }
-
-
-
+/** NOTE OF THINGS TO DO AT PIT SETUP
+ * 1. CHECK IF THE TURNING IS AT THE RIGHT INTERVAL
+ * 2. CHECK CHAIN POWER **/
