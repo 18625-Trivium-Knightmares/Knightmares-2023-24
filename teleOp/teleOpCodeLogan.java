@@ -47,7 +47,7 @@ public class teleOpCodeLogan extends LinearOpMode {
 //        SM.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         waitForStart(); // When the start button is pressed
 
-        if (opModeIsActive()) {
+
             while (opModeIsActive()) {
 
                 /**
@@ -60,31 +60,31 @@ public class teleOpCodeLogan extends LinearOpMode {
                 BL.setPower(gamepad1.left_stick_y * (speed*2));
 
                 if (gamepad1.dpad_up) {
-                    AM.setPower(0.5);
+                    AM.setPower(1);
                 } else if (gamepad1.dpad_down) {
-                    AM.setPower(-0.5);
+                    AM.setPower(-1);
                 } else {
                     AM.setPower(0);
                 }
                 if (gamepad1.dpad_left) {
-                    HM.setPower(0.5);
+                    HM.setPower(0.15);
                 } else if (gamepad1.dpad_right) {
-                    HM.setPower(-0.5);
+                    HM.setPower(-0.15);
                 } else {
                     HM.setPower(0);
                 }
-                //This is for strafing
+                //This is for strafing'
                 //THESE ARE THE OLD GAMEPAD 2 CONTROLS
                 if (gamepad1.right_trigger > 0) {
-                    FR.setPower(-speed);
-                    BL.setPower(speed);
-                    BR.setPower(speed);
+                    FR.setPower(speed);
+                    BL.setPower(speed*2);
+                    BR.setPower(-speed*0.75);
                     FL.setPower(-speed);
                 } else {
                     if (gamepad1.left_trigger > 0) {
-                        FR.setPower(speed);
-                        BL.setPower(-speed);
-                        BR.setPower(-speed);
+                        FR.setPower(-speed);
+                        BL.setPower(-speed*2);
+                        BR.setPower(speed*0.75);
                         FL.setPower(speed);
                     } else {
                         FR.setPower(0);
@@ -123,7 +123,7 @@ public class teleOpCodeLogan extends LinearOpMode {
                 }
             }
         }
-    }
+
     public void encoder(int a){
 //        SM.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         SM.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
