@@ -251,6 +251,7 @@ public class autoTest extends LinearOpMode {
 
             int x = convert(36);
             slide("left",x);
+            sleep(1000);
 
             if (spikePlacement == 0) {
                 turn(2000, "left");
