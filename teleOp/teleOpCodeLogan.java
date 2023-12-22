@@ -20,11 +20,15 @@ public class teleOpCodeLogan extends LinearOpMode {
     double newTarget;
     Servo Claw;
 
-
+    double BRSpeed = 0.75;
+    double BLSpeed = 2;
     double speed = 1;
     double halfspeed = 0.5; //This was for the faster moving parts (Chain motor)
     double openClaw = 0.001;
     double closeClaw = 1;
+
+    double ticksHar = 537.7;
+    double turn = ticksHar/2;
     @Override
     public void runOpMode() throws InterruptedException {
         // Assigning all of the servos and motors
@@ -55,9 +59,9 @@ public class teleOpCodeLogan extends LinearOpMode {
              */
             // Basic robot moving controls
             FR.setPower(gamepad1.right_stick_y * speed);
-            BR.setPower(gamepad1.right_stick_y * (speed*0.75));
+            BR.setPower(gamepad1.right_stick_y * (speed * BRSpeed));
             FL.setPower(gamepad1.left_stick_y * speed);
-            BL.setPower(gamepad1.left_stick_y * (speed*2));
+            BL.setPower(gamepad1.left_stick_y * (speed * BLSpeed));
 
             if (gamepad1.dpad_up) {
                 AM.setPower(1);
@@ -67,9 +71,27 @@ public class teleOpCodeLogan extends LinearOpMode {
                 AM.setPower(0);
             }
             if (gamepad1.dpad_left) {
-                HM.setPower(0.15);
+                HM.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                HM.setTargetPosition((int) turn);
+                HM.setPower(0.5);
+                HM.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+                while (HM.isBusy()) {
+                }
+                HM.setPower(0);
+
+                HM.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             } else if (gamepad1.dpad_right) {
-                HM.setPower(-0.15);
+                HM.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                HM.setTargetPosition(0);
+                HM.setPower(0.5);
+                HM.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+                while (HM.isBusy()) {
+                }
+                HM.setPower(0);
+
+                HM.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             } else {
                 HM.setPower(0);
             }
@@ -77,14 +99,14 @@ public class teleOpCodeLogan extends LinearOpMode {
             //THESE ARE THE OLD GAMEPAD 2 CONTROLS
             if (gamepad1.right_trigger > 0) {
                 FR.setPower(speed);
-                BL.setPower(speed*2);
-                BR.setPower(-speed*0.75);
+                BL.setPower(speed * BLSpeed);
+                BR.setPower(-speed * BRSpeed);
                 FL.setPower(-speed);
             } else {
                 if (gamepad1.left_trigger > 0) {
                     FR.setPower(-speed);
-                    BL.setPower(-speed*2);
-                    BR.setPower(speed*0.75);
+                    BL.setPower(-speed * BLSpeed);
+                    BR.setPower(speed * BRSpeed);
                     FL.setPower(speed);
                 } else {
                     FR.setPower(0);
@@ -93,24 +115,16 @@ public class teleOpCodeLogan extends LinearOpMode {
                     FL.setPower(0);
                 }
             }
-            CM.setPower(gamepad2.right_stick_y*halfspeed); //THESE ARE THE OLD GAMEPAD 2 CONTROLS
             /**
              * ALL UNDER GAMEPAD 2
              */
-            /*if (gamepad1.b) {
-             CM.setPower(halfspeed);
-             } else if (gamepad1.x) {
-             CM.setPower(-halfspeed);
-             } else {
-             CM.setPower(0);
-             }*/
-            SM.setPower(gamepad2.left_stick_y * -speed); //THESE ARE THE  OLD GAMEPAD 2 CONTROLS
-            if (gamepad1.y) {
-                encoder(2);
-                SM.setPower(speed);
-            }
+            CM.setPower(gamepad2.right_stick_y*halfspeed); //THESE ARE THE OLD GAMEPAD 2 CONTROLS
 
-             if (gamepad1.a) {
+            SM.setPower(gamepad2.left_stick_y * -speed); //THESE ARE THE  OLD GAMEPAD 2 CONTROLS
+
+            if (gamepad1.y) {
+                SM.setPower(speed);
+            }else if (gamepad1.a) {
                  SM.setPower(-speed);
              } else {
                  SM.setPower(0);
@@ -122,30 +136,6 @@ public class teleOpCodeLogan extends LinearOpMode {
                 Claw.setPosition(closeClaw);
             }
         }
-    }
-
-    public void encoder(int a){
-//        SM.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        SM.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        newTarget = ticks/a;
-        SM.setTargetPosition((int)newTarget);
-        SM.setPower(speed);
-        SM.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        while(SM.isBusy()) {
-        }
-        SM.setPower(0);
-        SM.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-    }
-
-    public void encoder2(int a){
-        newTarget = ticks2/a;
-        CM.setTargetPosition((int)newTarget);
-        CM.setPower(speed);
-        CM.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        while(CM.isBusy()){
-        }
-        CM.setPower(0);
-        CM.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 }
 //CM ENCODER!!!!!!!!!
