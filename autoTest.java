@@ -23,9 +23,16 @@ import org.openftc.easyopencv.PipelineRecordingParameters;
 
 @Autonomous
 public class autoTest extends LinearOpMode {
+    /**
+     * VARIABLES
+     */
+
+    // declaring the drive train
     DcMotor FR, FL, BR, BL;
+    // declaring webcam
     OpenCvWebcam webcam = null;
 
+    // other variable stuff
     double speed = 1;
     double BRSpeed = 0.75;
     double BLSpeed = 2;
@@ -34,6 +41,62 @@ public class autoTest extends LinearOpMode {
 
     int rsp;
 
+
+    /**
+     * METHODS
+     */
+
+    // MOVE
+    public void move(String direction, double power, int tIme) {
+        switch (direction) {
+            case "forw":
+                FR.setPower(power);
+                BR.setPower(power * BRSpeed);
+                FL.setPower(power);
+                BL.setPower(power * BLSpeed);
+
+                break;
+
+            case "back":
+                FR.setPower(-power);
+                BR.setPower(-power * BRSpeed);
+                FL.setPower(-power);
+                BL.setPower(-power * BLSpeed);
+
+                break;
+
+            case "left":
+                FR.setPower(-power);
+                BR.setPower(power * BRSpeed);
+                FL.setPower(power);
+                BL.setPower(-power * BLSpeed);
+
+                break;
+
+            case "right":
+                FR.setPower(power);
+                BR.setPower(-power * BRSpeed);
+                FL.setPower(-power);
+                BL.setPower(power * BLSpeed);
+
+                break;
+
+            default:
+                telemetry.addLine("goofy little baka");
+                telemetry.update();
+
+                break;
+        }
+
+        sleep(tIme);
+
+        FR.setPower(0);
+        BR.setPower(0);
+        FL.setPower(0);
+        BL.setPower(0);
+    }
+
+    // TURN
     public void turn(int tIme, String direction) {
         if (direction == "right") {
             FL.setPower(0.5);
@@ -47,9 +110,9 @@ public class autoTest extends LinearOpMode {
             BL.setPower(-0.5 * BLSpeed);
         }
 
-        if (tIme != 0) { // IF THIS IS SET TO ANY NUMBER OTHER THAN 0 IT WILL MAKE IT SO THAT IT
-            sleep(tIme); // TURNS FOR HOWEVER LONG IT IS SET TO, IF IT'S 0 IT WILL JUST SET
-            // THE MOTORS TO THE POWER INDEFINITELY
+        if (tIme != 0) {
+            sleep(tIme);
+
             FR.setPower(0);
             FL.setPower(0);
             BR.setPower(0);
@@ -57,33 +120,34 @@ public class autoTest extends LinearOpMode {
         }
     }
 
-    /**
-     * slide right/left
-     *
-     * example: slide(1500, left); will slide to the left at 50% power for 1.5 seconds
-     */
-
-    public int convert(double inch) {
-        double newinch = inch * -42.75; //1026 is the value for 24 inches, aka 2 feet
-        return ((int)newinch);
-    }
-
     @Override
     public void runOpMode() throws InterruptedException {
+        /**
+        * ASSIGNING MOTORS AND SERVOS
+        */
+
+        // DRIVE TRAIN
         FR = hardwareMap.dcMotor.get("rightFront");
         FL = hardwareMap.dcMotor.get("Buh");
         BR = hardwareMap.dcMotor.get("rightBack");
         BL = hardwareMap.dcMotor.get("Bruh");
 
+        // REVERSE THE LEFT
         FL.setDirection((DcMotor.Direction.REVERSE));
         BL.setDirection(DcMotor.Direction.REVERSE);
 
+        // CAMERA
         WebcamName webcamName = hardwareMap.get(WebcamName.class, "webcam");
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         webcam = OpenCvCameraFactory.getInstance().createWebcam(webcamName, cameraMonitorViewId);
 
         webcam.setPipeline(new colorPipeline());
 
+        /**
+         * FINDING BLOCK
+         */
+
+        // opens camera
         webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
             public void onOpened() {
@@ -97,26 +161,35 @@ public class autoTest extends LinearOpMode {
         });
 
         waitForStart();
-        rsp = spikePlacement;
-        webcam.stopStreaming();
 
+        rsp = spikePlacement; // tells us where and saves to variable
 
-        if (rsp == 2) {
-            FR.setPower(0.5);
-            BR.setPower(0.5);
-            sleep(2000);
-            FR.setPower(0);
-            BR.setPower(0);
-        } else if (rsp == 0) {
-            FL.setPower(0.5);
-            BL.setPower(0.5);
-            sleep(2000);
-            FL.setPower(0);
-            BL.setPower(0);
-        } else if (rsp == 1){} else {}
+        webcam.stopStreaming(); // stops camera so that it's set in stone
+
+        move("left", 0.75, 1000);
+
+        if (rsp == 0) {
+            telemetry.addLine("we go left");
+            telemetry.update();
+            turn(2000, "left");
+        } else if (rsp == 2) {
+            telemetry.addLine("we go right");
+            telemetry.update();
+            turn(2000, "right");
+        } else if (rsp == 1){
+            telemetry.addLine("we go middle");
+            telemetry.update();
+        } else {
+            telemetry.addLine("we go middle because there's nothing else and life is meaningless");
+            telemetry.update();
+        }
 
 
     }
+
+    /**
+     * PIPELINE
+     */
     class colorPipeline extends OpenCvPipeline {
         Mat YCbCr = new Mat();
         Mat leftCrop;
