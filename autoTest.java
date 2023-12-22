@@ -26,67 +26,25 @@ public class autoTest extends LinearOpMode {
     DcMotor FR, FL, BR, BL;
     OpenCvWebcam webcam = null;
 
-    public void startEncoders() {                                             /** start encoders **/
-        FL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        FR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        BL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        BR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-    }
-    public void exitEncoders() {                                               /** exit encoders **/
-        FL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        FR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        BL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        BR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-    }
-    public void resetEncoders() {                                           /** restart encoders **/
-        FL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        FR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        BL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        BR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-    }
+    double speed = 1;
+    double BRSpeed = 0.75;
+    double BLSpeed = 2;
 
-    public void goForward(int targetToPlace) {                             /** Go Forward Method **/
-        resetEncoders();
-        startEncoders();
+    int spikePlacement;
 
-        FL.setTargetPosition(targetToPlace);
-        FR.setTargetPosition(targetToPlace);
-        BL.setTargetPosition(targetToPlace);
-        BR.setTargetPosition(targetToPlace);
-
-        FL.setPower(0.5);
-        FR.setPower(0.5);
-        BL.setPower(0.5);
-        BR.setPower(0.5);
-
-        FL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        FR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        BL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        BR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        while (FR.isBusy() || FL.isBusy() || BR.isBusy() || BL.isBusy()) {
-        }
-
-        FL.setPower(0);
-        FR.setPower(0);
-        BL.setPower(0);
-        BR.setPower(0);
-
-        exitEncoders();
-        resetEncoders();
-    }
+    int rsp;
 
     public void turn(int tIme, String direction) {
         if (direction == "right") {
             FL.setPower(0.5);
-            BL.setPower(0.5);
+            BL.setPower(0.5 * BLSpeed);
             FR.setPower(-0.5);
-            BR.setPower(-0.5);
+            BR.setPower(-0.5 * BRSpeed);
         } else if (direction == "left") {
             FR.setPower(0.5);
-            BR.setPower(0.5);
+            BR.setPower(0.5 * BRSpeed);
             FL.setPower(-0.5);
-            BL.setPower(-0.5);
+            BL.setPower(-0.5 * BLSpeed);
         }
 
         if (tIme != 0) { // IF THIS IS SET TO ANY NUMBER OTHER THAN 0 IT WILL MAKE IT SO THAT IT
@@ -104,65 +62,6 @@ public class autoTest extends LinearOpMode {
      *
      * example: slide(1500, left); will slide to the left at 50% power for 1.5 seconds
      */
-    public void slide(String direction, int targetToPlace) {
-        if (direction == "right") {
-            resetEncoders();
-            startEncoders();
-
-            FL.setTargetPosition(targetToPlace);
-            FR.setTargetPosition(-targetToPlace);
-            BL.setTargetPosition(-targetToPlace);
-            BR.setTargetPosition(targetToPlace);
-
-            FL.setPower(0.5);
-            FR.setPower(0.5);
-            BL.setPower(0.5);
-            BR.setPower(0.5);
-
-            FL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            FR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            BL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            BR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-            while (FR.isBusy() || FL.isBusy() || BR.isBusy() || BL.isBusy()) {
-            }
-
-            FL.setPower(0);
-            FR.setPower(0);
-            BL.setPower(0);
-            BR.setPower(0);
-            exitEncoders();
-            resetEncoders();
-        } else if (direction == "left") {
-            resetEncoders();
-            startEncoders();
-
-            FL.setTargetPosition(-targetToPlace);
-            FR.setTargetPosition(targetToPlace);
-            BL.setTargetPosition(targetToPlace);
-            BR.setTargetPosition(-targetToPlace);
-
-            FL.setPower(0.5);
-            FR.setPower(0.5);
-            BL.setPower(0.5);
-            BR.setPower(0.5);
-
-            FL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            FR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            BL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            BR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-            while (FR.isBusy() || FL.isBusy() || BR.isBusy() || BL.isBusy()) {
-            }
-
-            FL.setPower(0);
-            FR.setPower(0);
-            BL.setPower(0);
-            BR.setPower(0);
-            exitEncoders();
-            resetEncoders();
-        }
-    }
 
     public int convert(double inch) {
         double newinch = inch * -42.75; //1026 is the value for 24 inches, aka 2 feet
@@ -176,9 +75,8 @@ public class autoTest extends LinearOpMode {
         BR = hardwareMap.dcMotor.get("rightBack");
         BL = hardwareMap.dcMotor.get("Bruh");
 
-        FR.setDirection((DcMotor.Direction.REVERSE));
-        BR.setDirection(DcMotor.Direction.REVERSE);
-
+        FL.setDirection((DcMotor.Direction.REVERSE));
+        BL.setDirection(DcMotor.Direction.REVERSE);
 
         WebcamName webcamName = hardwareMap.get(WebcamName.class, "webcam");
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
@@ -199,66 +97,83 @@ public class autoTest extends LinearOpMode {
         });
 
         waitForStart();
+        rsp = spikePlacement;
+        webcam.stopStreaming();
+
+
+        if (rsp == 2) {
+            FR.setPower(0.5);
+            BR.setPower(0.5);
+            sleep(2000);
+            FR.setPower(0);
+            BR.setPower(0);
+        } else if (rsp == 0) {
+            FL.setPower(0.5);
+            BL.setPower(0.5);
+            sleep(2000);
+            FL.setPower(0);
+            BL.setPower(0);
+        } else if (rsp == 1){} else {}
 
 
     }
     class colorPipeline extends OpenCvPipeline {
         Mat YCbCr = new Mat();
         Mat leftCrop;
+        Mat midCrop;
         Mat rightCrop;
         double leftavgfin;
+        double midavgfin;
         double rightavgfin;
         Mat outPut = new Mat();
-        Scalar rectColor = new Scalar(0.0, 0.0, 180.0);
+        Scalar rectColor = new Scalar(0.0, 0.0, 100.0);
 
         public Mat processFrame(Mat input) {
             Imgproc.cvtColor(input, YCbCr, Imgproc.COLOR_RGB2YCrCb);
             telemetry.addLine("pipeline running");
 
-            Rect leftRect = new Rect(1, 1, 300, 359);
-            Rect rightRect = new Rect(339, 1, 300, 359);
+            Rect leftRect = new Rect(1, 1, 250, 359);
+            Rect midRec = new Rect(251, 1, 137, 359);
+            Rect rightRect = new Rect(389, 1, 250, 359);
 
             input.copyTo(outPut);
             Imgproc.rectangle(outPut, leftRect, rectColor, 2);
+            Imgproc.rectangle(outPut, midRec, rectColor, 2);
             Imgproc.rectangle(outPut, rightRect, rectColor, 2);
 
             leftCrop = YCbCr.submat(leftRect);
+            midCrop = YCbCr.submat(midRec);
             rightCrop = YCbCr.submat(rightRect);
 
             Core.extractChannel(leftCrop, leftCrop, 2);
+            Core.extractChannel(midCrop, midCrop, 2);
             Core.extractChannel(rightCrop, rightCrop, 2);
 
             Scalar leftavg = Core.mean(leftCrop);
+            Scalar midavg = Core.mean(midCrop);
             Scalar rightavg = Core.mean(rightCrop);
 
-            leftavgfin = leftavg.val[0];
-            rightavgfin = rightavg.val[0];
+            leftavgfin = Math.ceil((leftavg.val[0]) - 9.3);
+            midavgfin = Math.ceil((midavg.val[0]) + 0.2);
+            rightavgfin = Math.ceil((rightavg.val[0]) + 0.5);
 
-            int spikePlacement;
-
-            if (leftavgfin > rightavgfin) {
+            if (rightavgfin > leftavgfin && rightavgfin > midavgfin) {
+                telemetry.addLine("It is on the right side");
+                spikePlacement = 2;
+            } else if (leftavgfin > rightavgfin && leftavgfin > midavgfin) {
                 telemetry.addLine("It is on the left side");
                 spikePlacement = 0;
-            } else if (rightavgfin > leftavgfin) {
-                telemetry.addLine("It is on the right side");
+            }  else if (midavgfin > rightavgfin && midavgfin > leftavgfin){
+                telemetry.addLine("It is in the middle");
                 spikePlacement = 1;
             } else {
-                telemetry.addLine("It must be in the middle");
-                spikePlacement = 2;
+                telemetry.addLine("I guess we're going for the middle");
+                spikePlacement = 1;
             }
+            telemetry.addLine("left is: " + String.valueOf(leftavgfin));
+            telemetry.addLine("mid is: " + String.valueOf(midavgfin));
+            telemetry.addLine("right is: " + String.valueOf(rightavgfin));
             telemetry.update();
-
-
-            int x = convert(36);
-            slide("left",x);
-            sleep(1000);
-
-            if (spikePlacement == 0) {
-                turn(2000, "left");
-            } else if (spikePlacement == 2) {
-                turn(2000, "right");
-            } else {
-            }
 
             return outPut;
         }
