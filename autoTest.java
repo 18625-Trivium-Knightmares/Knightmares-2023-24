@@ -41,7 +41,6 @@ public class autoTest extends LinearOpMode {
 
     int rsp;
 
-
     /**
      * METHODS
      */
@@ -66,18 +65,18 @@ public class autoTest extends LinearOpMode {
                 break;
 
             case "left":
-                FR.setPower(-power);
-                BR.setPower(power * BRSpeed);
-                FL.setPower(power);
-                BL.setPower(-power * BLSpeed);
-
-                break;
-
-            case "right":
                 FR.setPower(power);
                 BR.setPower(-power * BRSpeed);
                 FL.setPower(-power);
                 BL.setPower(power * BLSpeed);
+
+                break;
+
+            case "right":
+                FR.setPower(-power);
+                BR.setPower(power * BRSpeed);
+                FL.setPower(power);
+                BL.setPower(-power * BLSpeed);
 
                 break;
 
@@ -166,7 +165,7 @@ public class autoTest extends LinearOpMode {
 
         webcam.stopStreaming(); // stops camera so that it's set in stone
 
-        move("left", 0.75, 1000);
+        move("right", 0.75, 500);
 
         if (rsp == 0) {
             telemetry.addLine("we go left");
@@ -226,9 +225,9 @@ public class autoTest extends LinearOpMode {
             Scalar midavg = Core.mean(midCrop);
             Scalar rightavg = Core.mean(rightCrop);
 
-            leftavgfin = Math.ceil((leftavg.val[0]) - 9.3);
+            leftavgfin = Math.ceil((leftavg.val[0]) - 3.3);
             midavgfin = Math.ceil((midavg.val[0]) + 0.2);
-            rightavgfin = Math.ceil((rightavg.val[0]) + 0.5);
+            rightavgfin = Math.ceil((rightavg.val[0]) - 0.5);
 
             if (rightavgfin > leftavgfin && rightavgfin > midavgfin) {
                 telemetry.addLine("It is on the right side");
