@@ -225,9 +225,9 @@ public class autoTest extends LinearOpMode {
             Scalar midavg = Core.mean(midCrop);
             Scalar rightavg = Core.mean(rightCrop);
 
-            leftavgfin = Math.ceil((leftavg.val[0]) - 3.3);
-            midavgfin = Math.ceil((midavg.val[0]) + 0.2);
-            rightavgfin = Math.ceil((rightavg.val[0]) - 0.5);
+            leftavgfin = Math.ceil((leftavg.val[0]) + 1);
+            midavgfin = Math.ceil((midavg.val[0]));
+            rightavgfin = Math.ceil((rightavg.val[0]) + 3);
 
             if (rightavgfin > leftavgfin && rightavgfin > midavgfin) {
                 telemetry.addLine("It is on the right side");

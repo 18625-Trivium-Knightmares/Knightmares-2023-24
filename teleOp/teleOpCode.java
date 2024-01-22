@@ -16,21 +16,23 @@ public class teleOpCode extends LinearOpMode {
      */
 
     DcMotor AM, HM, CM, SM; // All of the motors
-    double ticks = 384.5;
-    double ticks2 = 444;
-    double newTarget;
-    Servo Claw;
+    public static double ticks = 384.5;
+    public static double ticks2 = 444;
+    public static double newTarget;
+    public static double launch = 1;
+    public static double set = 0.01;
+    Servo Claw, drone;
 
-    double BRSpeed = 0.75;
-    double BLSpeed = 2;
-    double speed = 1;
-    double halfspeed = 0.5; //This was for the faster moving parts (Chain motor)
-    double openClaw = 0.001;
-    double closeClaw = 1;
+    public static double BRSpeed = 0.75;
+    public static double BLSpeed = 2;
+    public static double speed = 1;
+    public static double halfspeed = 0.5; //This was for the faster moving parts (Chain motor)
+    public static double openClaw = 0.001;
+    public static double closeClaw = 1;
 
-    double ticksHar = 537.7;
-    double turn = ticksHar / 2;
-    double Actuatorticks = 537;
+    public static double ticksHar = 537.7;
+    public static double turn = ticksHar / 2;
+    public static double Actuatorticks = 6050;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -44,7 +46,7 @@ public class teleOpCode extends LinearOpMode {
         AM = hardwareMap.dcMotor.get("actuator");
         SM = hardwareMap.dcMotor.get("Slide");
         Claw = hardwareMap.servo.get("Claw");
-
+        drone = hardwareMap.servo.get("drones");
 
         telemetry.addData(">", "Press Play to start op mode"); // Will add stuff to the driver hub screen
         telemetry.update(); // Will update the driver hub screen so that the above will appear
@@ -57,19 +59,8 @@ public class teleOpCode extends LinearOpMode {
                 /**
                  * ALL UNDER GAMEPAD 1
                  */
-                CM.setPower(gamepad2.right_stick_y * halfspeed); //THESE ARE THE OLD GAMEPAD 2 CONTROLS
 
-                SM.setPower(gamepad2.left_stick_y * -speed); //THESE ARE THE  OLD GAMEPAD 2 CONTROLS
-
-                if (gamepad1.y) {
-                    SM.setPower(speed);
-                } else if (gamepad1.a) {
-                    SM.setPower(-speed);
-                } else {
-                    SM.setPower(0);
-                }
                 // Drive Train
-
                 if (gamepad1.right_stick_x != 0 || gamepad1.left_stick_x != 0 || gamepad1.left_stick_y != 0) {
                     drive.setWeightedDrivePower(
                             new Pose2d(
@@ -99,14 +90,16 @@ public class teleOpCode extends LinearOpMode {
 
                 if (gamepad1.dpad_up) {
                     HM.setTargetPosition((int) 537.7/4);
-                    HM.setPower(0.25);
+                    HM.setPower(0.5);
                     HM.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     while(HM.isBusy()) {
                     }
                     HM.setPower(0);
 
+                    sleep(100);
+
                     AM.setTargetPosition((int) Actuatorticks);
-                    AM.setPower(0.5);
+                    AM.setPower(1);
                     AM.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
                     while (AM.isBusy()) {
@@ -115,7 +108,7 @@ public class teleOpCode extends LinearOpMode {
                     AM.setPower(0);
                 } else if (gamepad1.dpad_down) {
                     AM.setTargetPosition(0);
-                    AM.setPower(0.3);
+                    AM.setPower(1);
                     AM.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
                     while (AM.isBusy()) {
@@ -124,40 +117,31 @@ public class teleOpCode extends LinearOpMode {
                 } else {
                     AM.setPower(0);
                 }
-                /*if (gamepad1.dpad_left) {
-                    HM.setTargetPosition((int) 537.7/4);
-                    HM.setPower(0.25);
-                    HM.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                    while(HM.isBusy()) {
-                    }
-                    HM.setPower(0);
 
-                    AM.setTargetPosition((int) Actuatorticks);
-                    AM.setPower(0.5);
-                    AM.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-                    while (AM.isBusy()) {
+                if (gamepad1.b) {
+                    drone.setPosition(launch);
+                }
+                if (gamepad1.x) {
+                    drone.setPosition(set);
+                }
 
-                    }
-                    AM.setPower(0);
-                } else if (gamepad1.dpad_right) {
-                    HM.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                    HM.setTargetPosition(0);
-                    HM.setPower(0.5);
-                    HM.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-                    while (HM.isBusy()) {
-                    }
-                    HM.setPower(0);
-
-                    HM.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-                } else {
-                    HM.setPower(0);
-                }*/
 
                 /**
                  * ALL UNDER GAMEPAD 2
                  */
+
+                CM.setPower(gamepad2.right_stick_y * halfspeed); //THESE ARE THE OLD GAMEPAD 2 CONTROLS
+
+                SM.setPower(gamepad2.left_stick_y * -speed); //THESE ARE THE  OLD GAMEPAD 2 CONTROLS
+
+                if (gamepad1.y) {
+                    SM.setPower(speed);
+                } else if (gamepad1.a) {
+                    SM.setPower(-speed);
+                } else {
+                    SM.setPower(0);
+                }
 
                 if (gamepad2.left_bumper) {         //gamepad1.left_trigger > 0 OLD GAMEPAD 2 CONTROLS
                     Claw.setPosition(openClaw);

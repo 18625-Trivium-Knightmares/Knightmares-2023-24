@@ -18,142 +18,22 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 import org.openftc.easyopencv.OpenCvWebcam;
 
-
-@Autonomous (name = "Red Right")
+@Autonomous (name="blue stuff")
 @Config
-public class stAuto extends LinearOpMode {
-
-    /**
-     * METHODS
-     */
-
-    // START ENCODERS
-    public void startEncoders() {
-        FL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        FR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        BL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        BR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-    }
-
-    // EXIT ENCODERS
-    public void exitEncoders() {
-        FL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        FR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        BL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        BR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-    }
-
-    // RESTART ENCODERS
-    public void resetEncoders() {
-        FL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        FR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        BL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        BR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-    }
-
-    // SET DRIVE POWER
-    public void setMotorPower(double power) {
-        FR.setPower(power);
-        FL.setPower(power);
-        BR.setPower(power);
-        BL.setPower(power);
-    }
-
-    public void runEncoders() {
-        FR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        FL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        BR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        BL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-    }
-
-    // DRIVETRAIN MOVEMENT
-    public void move(double inches, String direction) {
-        resetEncoders();
-        startEncoders();
-        double newTarget = TPI * inches;
-
-        switch (direction) {
-            case "forward":
-                FR.setTargetPosition((int) newTarget);
-                FL.setTargetPosition((int) newTarget);
-                BR.setTargetPosition((int) newTarget);
-                BL.setTargetPosition((int) newTarget);
-                break;
-
-            case "backward":
-                FR.setTargetPosition((int) -newTarget);
-                FL.setTargetPosition((int) -newTarget);
-                BR.setTargetPosition((int) -newTarget);
-                BL.setTargetPosition((int) -newTarget);
-                break;
-
-            case "left":
-                FR.setTargetPosition((int) newTarget);
-                FL.setTargetPosition((int) -newTarget);
-                BR.setTargetPosition((int) -newTarget);
-                BL.setTargetPosition((int) newTarget);
-                break;
-
-            case "right":
-                FR.setTargetPosition((int) -newTarget);
-                FL.setTargetPosition((int) newTarget);
-                BR.setTargetPosition((int) newTarget);
-                BL.setTargetPosition((int) -newTarget);
-                break;
-
-            case "right_turn":
-//                FR.setTargetPosition((int) -newTarget);
-                FL.setTargetPosition((int) newTarget);
-//                BR.setTargetPosition((int) -newTarget);
-                BL.setTargetPosition((int) newTarget);
-                break;
-
-            case "left_turn":
-                FR.setTargetPosition((int) newTarget);
-//                FL.setTargetPosition((int) -newTarget);
-                BR.setTargetPosition((int) newTarget);
-//                BL.setTargetPosition((int) -newTarget);
-                break;
-        }
-        setMotorPower(1);
-        runEncoders();
-
-        while(FR.isBusy() || FL.isBusy() || BR.isBusy() || BL.isBusy()) {
-        }
-
-        resetEncoders();
-        exitEncoders();
-
-    }
-    /**
-     * VARIABLES
-     */
-
-    public static double TPI = 45;
+public class blueStuff extends LinearOpMode {
+    int spikePlacement;
+    int rsp;
 
     public static double openClaw = 0.001;
     public static double closeClaw = 1;
-
-
-    public static double strt = 10;
-    public static double frstTrn = 10;
-    public static double mId = 5;
-    public static double midBck = 10;
-    public static double normBck = 5;
-    public static double backStage = 15;
-    public static double end = 5;
-
-
-
-    int spikePlacement;
-    int rsp;
+    public static double speed = 0.75;
+    double BRSpeed = 1;
+    double BLSpeed = 1;
 
     // DECLARING MOTORS, SERVOS, AND CAMERA
     OpenCvWebcam webcam = null;
     DcMotor FR, FL, BR, BL, AM, HM, CM, SM;
     Servo Claw;
-
-
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -162,28 +42,28 @@ public class stAuto extends LinearOpMode {
          */
 
         // Assigning all of the servos, motors, and camera
-            //DRIVE TRAIN
+        //DRIVE TRAIN
         FR = hardwareMap.dcMotor.get("rightFront");
         FL = hardwareMap.dcMotor.get("Buh");
         BR = hardwareMap.dcMotor.get("rightBack");
         BL = hardwareMap.dcMotor.get("Bruh");
-            //OTHER
+        //OTHER
         CM = hardwareMap.dcMotor.get("ch");
         HM = hardwareMap.dcMotor.get("hoist");
         AM = hardwareMap.dcMotor.get("actuator");
         SM = hardwareMap.dcMotor.get("Slide");
         Claw = hardwareMap.servo.get("Claw");
 
-            // REVERSE THE LEFT DRIVE
+        // REVERSE THE LEFT DRIVE
         FL.setDirection((DcMotor.Direction.REVERSE));
         BL.setDirection(DcMotor.Direction.REVERSE);
 
-            // CAMERA
+        // CAMERA
         WebcamName webcamName = hardwareMap.get(WebcamName.class, "webcam");
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         webcam = OpenCvCameraFactory.getInstance().createWebcam(webcamName, cameraMonitorViewId);
 
-        webcam.setPipeline(new stAuto.colorPipeline());
+        webcam.setPipeline(new colorPipeline());
 
         /**
          * FINDING BLOCK
@@ -210,25 +90,82 @@ public class stAuto extends LinearOpMode {
 
         webcam.stopStreaming(); // stops camera so that it's set in stone
 
-        move(36, "left");
-        move(6, "right");
+        FR.setPower(speed);
+        BL.setPower(speed * BLSpeed);
+        BR.setPower(-speed * BRSpeed);
+        FL.setPower(-speed);
 
-        /*if(rsp == 2) {
-            move(frstTrn, "right_turn");
-            move(-frstTrn, "right_turn");
-        } else if (rsp == 1) {
-            move(mId, "left");
-            move(midBck, "right");
+        sleep(1000);
+
+        FR.setPower(0);
+        FL.setPower(0);
+        BR.setPower(0);
+        BL.setPower(0);
+
+        if (rsp == 2) {
+            BL.setPower(speed * BLSpeed);
+            FL.setPower(speed);
+
+            sleep(500);
+
+            BL.setPower(-speed * BLSpeed);
+            FL.setPower(-speed);
+
+            sleep(500);
+
+            BL.setPower(0);
+            FL.setPower(0);
         } else if (rsp == 0) {
-            move(frstTrn, "left_turn");
-            move(-frstTrn, "left_turn");
+            FR.setPower(speed);
+            BL.setPower(speed * BLSpeed);
+            BR.setPower(-speed * BRSpeed);
+            FL.setPower(-speed);
+
+            sleep(800);
+
+            FR.setPower(-speed);
+            BL.setPower(-speed * BLSpeed);
+            BR.setPower(speed * BRSpeed);
+            FL.setPower(speed);
+
+            sleep(500);
+
+            FR.setPower(0);
+            BL.setPower(0);
+            BR.setPower(0);
+            FL.setPower(0);
+        } else if (rsp == 0) {
+            BR.setPower(speed * BLSpeed);
+            FR.setPower(speed);
+
+            sleep(500);
+
+            BR.setPower(-speed * BLSpeed);
+            FR.setPower(-speed);
+
+            sleep(500);
+
+            BR.setPower(0);
+            FR.setPower(0);
         }
-        move(normBck, "right");
-        move(backStage, "forward");
-        move(end, "left");*/
+        FR.setPower(-speed);
+        BL.setPower(-speed * BLSpeed);
+        BR.setPower(speed * BRSpeed);
+        FL.setPower(speed);
 
+        sleep(10);
 
+        FR.setPower(-speed);
+        BL.setPower(-speed * BLSpeed);
+        BR.setPower(-speed * BRSpeed);
+        FL.setPower(-speed);
 
+        sleep(700);
+
+        FR.setPower(0);
+        FL.setPower(0);
+        BR.setPower(0);
+        BL.setPower(0);
     }
 
     /**
