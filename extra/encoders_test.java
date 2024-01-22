@@ -10,7 +10,7 @@ public class encoders_test extends LinearOpMode {
     // Initialization:
     DcMotor FR, FL, BR, BL, hoist, chain, actuator, slide;
     double ticks = 537.7;
-    double turn = ticks/2;
+    double turn = ticks / 2;
 
     public void runOpMode() throws InterruptedException {
 
@@ -31,31 +31,32 @@ public class encoders_test extends LinearOpMode {
         BL.setDirection(DcMotorSimple.Direction.REVERSE);
 
         waitForStart();
-     while (opModeIsActive()) {
-         if (gamepad1.a) {
-             hoist.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-             hoist.setTargetPosition((int) turn);
-             hoist.setPower(0.5);
-             hoist.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        while (opModeIsActive()) {
+            if (gamepad1.a) {
+                hoist.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                hoist.setTargetPosition((int) turn);
+                hoist.setPower(0.5);
+                hoist.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-             while (hoist.isBusy()) {
-             }
-             hoist.setPower(0);
-             }
-             hoist.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-         }
+                while (hoist.isBusy()) {
+                }
+                hoist.setPower(0);
+            }
+            hoist.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        }
 
-         if (gamepad1.dpad_up) {
-             actuator.setPower(0.4);
-         } else {
-             actuator.setPower(0);
-         }
+        if (gamepad1.dpad_up) {
+            actuator.setPower(0.4);
+        } else {
+            actuator.setPower(0);
+        }
 
-         if (gamepad1.dpad_down) {
-             actuator.setPower(-0.4);
-         } else {
-             actuator.setPower(0);
-         }
-     }
+        if (gamepad1.dpad_down) {
+            actuator.setPower(-0.4);
+        } else {
+            actuator.setPower(0);
+        }
     }
+}
+
 
