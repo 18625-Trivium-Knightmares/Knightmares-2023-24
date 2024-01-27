@@ -53,7 +53,7 @@ public class TeleOpFieldCentric extends LinearOpMode {
                     new Pose2d(
                             input.getX(),
                             input.getY(),
-                            gamepad1.right_stick_x
+                            -gamepad1.right_stick_x
                     )
             );
 

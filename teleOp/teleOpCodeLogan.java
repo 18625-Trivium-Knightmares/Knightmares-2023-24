@@ -32,10 +32,10 @@ public class teleOpCodeLogan extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         // Assigning all of the servos and motors
-        FR = hardwareMap.dcMotor.get("rightFront");
-        FL = hardwareMap.dcMotor.get("Buh");
-        BR = hardwareMap.dcMotor.get("rightBack");
-        BL = hardwareMap.dcMotor.get("Bruh");
+        FR = hardwareMap.get(DcMotor.class, "rightFront");
+        FL = hardwareMap.get(DcMotor.class, "leftFront");
+        BR = hardwareMap.get(DcMotor.class, "rightBack");
+        BL = hardwareMap.get(DcMotor.class, "leftBack");
         CM = hardwareMap.dcMotor.get("ch");
         HM = hardwareMap.dcMotor.get("hoist");
         AM = hardwareMap.dcMotor.get("actuator");

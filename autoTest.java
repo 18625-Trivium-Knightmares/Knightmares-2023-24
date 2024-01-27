@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode;
 
-import android.graphics.Bitmap;
-
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -126,10 +124,10 @@ public class autoTest extends LinearOpMode {
         */
 
         // DRIVE TRAIN
-        FR = hardwareMap.dcMotor.get("rightFront");
-        FL = hardwareMap.dcMotor.get("Buh");
-        BR = hardwareMap.dcMotor.get("rightBack");
-        BL = hardwareMap.dcMotor.get("Bruh");
+        FR = hardwareMap.get(DcMotor.class, "rightFront");
+        FL = hardwareMap.get(DcMotor.class, "leftFront");
+        BR = hardwareMap.get(DcMotor.class, "rightBack");
+        BL = hardwareMap.get(DcMotor.class, "leftBack");
 
         // REVERSE THE LEFT
         FL.setDirection((DcMotor.Direction.REVERSE));
@@ -198,7 +196,7 @@ public class autoTest extends LinearOpMode {
         double midavgfin;
         double rightavgfin;
         Mat outPut = new Mat();
-        Scalar rectColor = new Scalar(0.0, 0.0, 100.0);
+        Scalar rectColor = new Scalar(230.0, 0.0, 0.0);
 
         public Mat processFrame(Mat input) {
             Imgproc.cvtColor(input, YCbCr, Imgproc.COLOR_RGB2YCrCb);
@@ -225,17 +223,17 @@ public class autoTest extends LinearOpMode {
             Scalar midavg = Core.mean(midCrop);
             Scalar rightavg = Core.mean(rightCrop);
 
-            leftavgfin = Math.ceil((leftavg.val[0]) + 1);
-            midavgfin = Math.ceil((midavg.val[0]));
-            rightavgfin = Math.ceil((rightavg.val[0]) + 3);
+            leftavgfin = Math.ceil((leftavg.val[0]));
+            midavgfin = Math.ceil((midavg.val[0]) + 2);
+            rightavgfin = Math.ceil((rightavg.val[0]) + 4);
 
-            if (rightavgfin > leftavgfin && rightavgfin > midavgfin) {
+            if (rightavgfin < leftavgfin && rightavgfin < midavgfin) {
                 telemetry.addLine("It is on the right side");
                 spikePlacement = 2;
-            } else if (leftavgfin > rightavgfin && leftavgfin > midavgfin) {
+            } else if (leftavgfin < rightavgfin && leftavgfin < midavgfin) {
                 telemetry.addLine("It is on the left side");
                 spikePlacement = 0;
-            }  else if (midavgfin > rightavgfin && midavgfin > leftavgfin){
+            }  else if (midavgfin < rightavgfin && midavgfin < leftavgfin){
                 telemetry.addLine("It is in the middle");
                 spikePlacement = 1;
             } else {
@@ -245,6 +243,10 @@ public class autoTest extends LinearOpMode {
             telemetry.addLine("left is: " + String.valueOf(leftavgfin));
             telemetry.addLine("mid is: " + String.valueOf(midavgfin));
             telemetry.addLine("right is: " + String.valueOf(rightavgfin));
+
+            telemetry.addLine(String.valueOf(Math.ceil((leftavg.val[0]))));
+            telemetry.addLine(String.valueOf(Math.ceil((midavg.val[0]))));
+            telemetry.addLine(String.valueOf(Math.ceil((rightavg.val[0]))));
             telemetry.update();
 
             return outPut;

@@ -16,9 +16,9 @@ public class encoders_test extends LinearOpMode {
 
         // DT motors
         FR = hardwareMap.get(DcMotor.class, "rightFront");
-        FL = hardwareMap.get(DcMotor.class, "Buh");
+        FL = hardwareMap.get(DcMotor.class, "leftFront");
         BR = hardwareMap.get(DcMotor.class, "rightBack");
-        BL = hardwareMap.get(DcMotor.class, "Bruh");
+        BL = hardwareMap.get(DcMotor.class, "leftBack");
 
         // Other
         hoist = hardwareMap.get(DcMotor.class, "hoist");

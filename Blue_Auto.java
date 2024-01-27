@@ -30,6 +30,11 @@ public class Blue_Auto extends LinearOpMode {
         int spikePlacement;
         int rsp;
 
+        public static double strtPstion = 26.5;
+        public static double bckUp = 5;
+        public static double prk = 20;
+
+
         // Motors, servos, and camera
         DcMotor FR, FL, BR, BL, hoist, chain, actuator, slide;
         Servo claw;
@@ -107,6 +112,7 @@ public class Blue_Auto extends LinearOpMode {
             runEncoders();
 
             while (FR.isBusy() && FL.isBusy() && BR.isBusy() && BL.isBusy()) {
+                setMotorPower(0.5);
             }
             resetEncoders();
             stopMotors();
@@ -118,9 +124,9 @@ public class Blue_Auto extends LinearOpMode {
 
             // Expansion Hub Motors
             FR = hardwareMap.get(DcMotor.class, "rightFront");
-            FL = hardwareMap.get(DcMotor.class, "Buh");
+            FL = hardwareMap.get(DcMotor.class, "leftFront");
             BR = hardwareMap.get(DcMotor.class, "rightBack");
-            BL = hardwareMap.get(DcMotor.class, "Bruh");
+            BL = hardwareMap.get(DcMotor.class, "leftBack");
 
             // Control Hub Motors
             hoist = hardwareMap.get(DcMotor.class, "hoist");
@@ -170,18 +176,145 @@ public class Blue_Auto extends LinearOpMode {
 
             // Right Line
 
-            move(1, "forward");
-            move(26.5, "left");
-            move(5, "right");
-            move(7.5, "backward");
-            move(35.5, "left");
-            chain.setPower(-0.5);
+//            move(1, "forward");
+            move(strtPstion, "left");
+            move(bckUp, "right");
+            move(prk, "backward");
+//            move(35.5, "left");
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            /*chain.setPower(-0.5);
             sleep(1000);
             chain.setPower(0);
             move(75, "backward");
-            move(36, "right_turn"); 
+            move(36, "right_turn");
             move(42, "left");
-            move(18, "forward");
+            move(18, "forward");*/
 
 
             // Middle Line

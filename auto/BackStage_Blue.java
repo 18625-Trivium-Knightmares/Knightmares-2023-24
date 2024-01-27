@@ -202,10 +202,10 @@ public class BackStage_Blue extends LinearOpMode{
          */
 
         // DRIVE TRAIN MOTORS
-        FR = hardwareMap.dcMotor.get("rightFront");
-        FL = hardwareMap.dcMotor.get("Buh");
-        BR = hardwareMap.dcMotor.get("rightBack");
-        BL = hardwareMap.dcMotor.get("Bruh");
+        FR = hardwareMap.get(DcMotor.class, "rightFront");
+        FL = hardwareMap.get(DcMotor.class, "leftFront");
+        BR = hardwareMap.get(DcMotor.class, "rightBack");
+        BL = hardwareMap.get(DcMotor.class, "leftBack");
 
         // OTHER MOTORS
         CM = hardwareMap.dcMotor.get("ch");

@@ -21,9 +21,9 @@ public class encoders extends LinearOpMode {
         // Expansion Hub:
 
         FR = hardwareMap.get(DcMotor.class, "rightFront");
-        FL = hardwareMap.get(DcMotor.class, "Buh");
+        FL = hardwareMap.get(DcMotor.class, "leftFront");
         BR = hardwareMap.get(DcMotor.class, "rightBack");
-        BL = hardwareMap.get(DcMotor.class, "Bruh");
+        BL = hardwareMap.get(DcMotor.class, "leftBack");
 
         FL.setDirection(DcMotorSimple.Direction.REVERSE);
         BL.setDirection(DcMotorSimple.Direction.REVERSE);

@@ -86,6 +86,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
             runEncoders();
 
             while (FR.isBusy() && FL.isBusy() && BR.isBusy() && BL.isBusy()) {
+                setMotorPower(0.5);
             }
             resetEncoders();
             stopMotors();
@@ -97,9 +98,9 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
             // Expansion Hub Motors
             FR = hardwareMap.get(DcMotor.class, "rightFront");
-            FL = hardwareMap.get(DcMotor.class, "Buh");
+            FL = hardwareMap.get(DcMotor.class, "leftFront");
             BR = hardwareMap.get(DcMotor.class, "rightBack");
-            BL = hardwareMap.get(DcMotor.class, "Bruh");
+            BL = hardwareMap.get(DcMotor.class, "leftBack");
 
             // Control Hub Motors
             hoist = hardwareMap.get(DcMotor.class, "hoist");

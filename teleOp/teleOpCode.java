@@ -19,7 +19,7 @@ public class teleOpCode extends LinearOpMode {
     public static double ticks = 384.5;
     public static double ticks2 = 444;
     public static double newTarget;
-    public static double launch = 1;
+    public static double launch = 0.5;
     public static double set = 0.01;
     Servo Claw, drone;
 
@@ -89,23 +89,22 @@ public class teleOpCode extends LinearOpMode {
 
 
                 if (gamepad1.dpad_up) {
-                    HM.setTargetPosition((int) 537.7/4);
-                    HM.setPower(0.5);
-                    HM.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                    while(HM.isBusy()) {
-                    }
-                    HM.setPower(0);
-
-                    sleep(100);
-
+                    HM.setTargetPosition((int) (-537.7/2.5));
                     AM.setTargetPosition((int) Actuatorticks);
+                    HM.setPower(0.5);
                     AM.setPower(1);
+                    HM.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     AM.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-                    while (AM.isBusy()) {
-
+                    while(HM.isBusy() || AM.isBusy()) {
                     }
+
+                    HM.setPower(0);
                     AM.setPower(0);
+                    telemetry.addLine("actuator is " + AM.getCurrentPosition());
+                    telemetry.addLine("hook is " + HM.getCurrentPosition());
+                    telemetry.update();
+
                 } else if (gamepad1.dpad_down) {
                     AM.setTargetPosition(0);
                     AM.setPower(1);
@@ -116,6 +115,7 @@ public class teleOpCode extends LinearOpMode {
                     AM.setPower(0);
                 } else {
                     AM.setPower(0);
+                    HM.setPower(0);
                 }
 
 

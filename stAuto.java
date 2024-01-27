@@ -78,6 +78,11 @@ public class stAuto extends LinearOpMode {
                 FL.setTargetPosition((int) newTarget);
                 BR.setTargetPosition((int) newTarget);
                 BL.setTargetPosition((int) newTarget);
+
+                setMotorPower(0.6);
+                while (FR.isBusy() || FL.isBusy() || BR.isBusy() || BL.isBusy()) {
+                    setMotorPower(0.6);
+                }
                 break;
 
             case "backward":
@@ -85,6 +90,11 @@ public class stAuto extends LinearOpMode {
                 FL.setTargetPosition((int) -newTarget);
                 BR.setTargetPosition((int) -newTarget);
                 BL.setTargetPosition((int) -newTarget);
+
+                setMotorPower(0.6);
+                while (FR.isBusy() || FL.isBusy() || BR.isBusy() || BL.isBusy()) {
+                    setMotorPower(0.6);
+                }
                 break;
 
             case "left":
@@ -92,6 +102,11 @@ public class stAuto extends LinearOpMode {
                 FL.setTargetPosition((int) -newTarget);
                 BR.setTargetPosition((int) -newTarget);
                 BL.setTargetPosition((int) newTarget);
+
+                setMotorPower(0.6);
+                while (FR.isBusy() || FL.isBusy() || BR.isBusy() || BL.isBusy()) {
+                    setMotorPower(0.6);
+                }
                 break;
 
             case "right":
@@ -99,30 +114,46 @@ public class stAuto extends LinearOpMode {
                 FL.setTargetPosition((int) newTarget);
                 BR.setTargetPosition((int) newTarget);
                 BL.setTargetPosition((int) -newTarget);
+
+                setMotorPower(0.6);
+                while (FR.isBusy() || FL.isBusy() || BR.isBusy() || BL.isBusy()) {
+                    setMotorPower(0.6);
+                }
                 break;
 
             case "right_turn":
-//                FR.setTargetPosition((int) -newTarget);
                 FL.setTargetPosition((int) newTarget);
-//                BR.setTargetPosition((int) -newTarget);
                 BL.setTargetPosition((int) newTarget);
+
+                FL.setPower(0.6);
+                BL.setPower(0.6 * BLSpeed);
+
+                runEncoders();
+                while(FR.isBusy() || FL.isBusy() || BR.isBusy() || BL.isBusy()) {
+                    FL.setPower(0.6);
+                    BL.setPower(0.6 * BLSpeed);
+                }
                 break;
 
             case "left_turn":
                 FR.setTargetPosition((int) newTarget);
-//                FL.setTargetPosition((int) -newTarget);
                 BR.setTargetPosition((int) newTarget);
-//                BL.setTargetPosition((int) -newTarget);
+
+                FR.setPower(0.6);
+                BR.setPower(0.6 * BRSpeed);
+
+                runEncoders();
+                while(FR.isBusy() || FL.isBusy() || BR.isBusy() || BL.isBusy()) {
+                    FR.setPower(0.6);
+                    BR.setPower(0.6 * BRSpeed);
+                }
                 break;
         }
-        setMotorPower(1);
-        runEncoders();
-
-        while(FR.isBusy() || FL.isBusy() || BR.isBusy() || BL.isBusy()) {
-        }
+        setMotorPower(0);
 
         resetEncoders();
         exitEncoders();
+        sleep(1000);
 
     }
     /**
@@ -133,15 +164,17 @@ public class stAuto extends LinearOpMode {
 
     public static double openClaw = 0.001;
     public static double closeClaw = 1;
+    public static double speed = 0.90;
+    double BRSpeed = 0.75;
+    double BLSpeed = 2;
 
 
-    public static double strt = 10;
-    public static double frstTrn = 10;
-    public static double mId = 5;
-    public static double midBck = 10;
-    public static double normBck = 5;
-    public static double backStage = 15;
-    public static double end = 5;
+    public static double step1 = 34;
+
+    public static double RLstep1 = 28;
+    public static double rTurn1 = 6;
+    public static double mid1 = 6;
+    public static double step2 = 36;
 
 
 
@@ -149,7 +182,7 @@ public class stAuto extends LinearOpMode {
     int rsp;
 
     // DECLARING MOTORS, SERVOS, AND CAMERA
-    OpenCvWebcam webcam = null;
+    OpenCvWebcam webcam;
     DcMotor FR, FL, BR, BL, AM, HM, CM, SM;
     Servo Claw;
 
@@ -163,10 +196,10 @@ public class stAuto extends LinearOpMode {
 
         // Assigning all of the servos, motors, and camera
             //DRIVE TRAIN
-        FR = hardwareMap.dcMotor.get("rightFront");
-        FL = hardwareMap.dcMotor.get("Buh");
-        BR = hardwareMap.dcMotor.get("rightBack");
-        BL = hardwareMap.dcMotor.get("Bruh");
+        FR = hardwareMap.get(DcMotor.class, "rightFront");
+        FL = hardwareMap.get(DcMotor.class, "leftFront");
+        BR = hardwareMap.get(DcMotor.class, "rightBack");
+        BL = hardwareMap.get(DcMotor.class, "leftBack");
             //OTHER
         CM = hardwareMap.dcMotor.get("ch");
         HM = hardwareMap.dcMotor.get("hoist");
@@ -183,7 +216,7 @@ public class stAuto extends LinearOpMode {
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         webcam = OpenCvCameraFactory.getInstance().createWebcam(webcamName, cameraMonitorViewId);
 
-        webcam.setPipeline(new stAuto.colorPipeline());
+        webcam.setPipeline(new colorPipeline());
 
         /**
          * FINDING BLOCK
@@ -210,15 +243,167 @@ public class stAuto extends LinearOpMode {
 
         webcam.stopStreaming(); // stops camera so that it's set in stone
 
-        move(36, "left");
-        move(6, "right");
+
+        resetEncoders();
+        startEncoders();
+
+        FR.setTargetPosition((int) (TPI * RLstep1));
+        FL.setTargetPosition((int) (-TPI * RLstep1));
+        BR.setTargetPosition((int) (-TPI * RLstep1));
+        BL.setTargetPosition((int) (TPI * RLstep1));
+
+        FR.setPower(speed);
+        FL.setPower(-speed);
+        BR.setPower(-speed);
+        BL.setPower(speed);
+
+        runEncoders();
+        while (FR.isBusy() || FL.isBusy() || BR.isBusy() || BL.isBusy()) {
+            FR.setPower(speed);
+            FL.setPower(-speed);
+            BR.setPower(-speed);
+            BL.setPower(speed);
+        }
+        setMotorPower(0);
+
+        resetEncoders();
+        startEncoders();
+
+        FR.setTargetPosition((int) (TPI * rTurn1));
+        FL.setTargetPosition((int) (-TPI * rTurn1));
+        BL.setTargetPosition((int) (TPI * rTurn1));
+
+        FR.setPower(speed);
+        BL.setPower(speed);
+        FL.setPower(-speed);
+
+        runEncoders();
+        while (FL.isBusy() || BL.isBusy()) {
+            FR.setPower(speed);
+            BL.setPower(speed);
+            FL.setPower(-speed);
+        }
+        setMotorPower(0);
+
+
+        resetEncoders();
+        startEncoders();
+
+        FR.setTargetPosition((int) (-TPI * rTurn1));
+        FL.setTargetPosition((int) (TPI * rTurn1));
+        BL.setTargetPosition((int) (-TPI * rTurn1));
+
+        FR.setPower(-speed);
+        BL.setPower(-speed);
+        FL.setPower(speed);
+
+        runEncoders();
+        while (FL.isBusy() || BL.isBusy()) {
+            FR.setPower(-speed);
+            BL.setPower(-speed);
+            FL.setPower(speed);
+        }
+        setMotorPower(0);
+
+        resetEncoders();
+        startEncoders();
+
+        FR.setTargetPosition((int) (-TPI * step2));
+        FL.setTargetPosition((int) (-TPI * step2));
+        BR.setTargetPosition((int) (-TPI * step2));
+        BL.setTargetPosition((int) (-TPI * step2));
+
+        FR.setPower(-speed);
+        FL.setPower(-speed);
+        BR.setPower(-speed);
+        BL.setPower(-speed);
+
+        runEncoders();
+        while (FR.isBusy() || FL.isBusy() || BR.isBusy() || BL.isBusy()) {
+            FR.setPower(-speed);
+            FL.setPower(-speed);
+            BR.setPower(-speed);
+            BL.setPower(-speed);
+        }
+        setMotorPower(0);
+
+
+
+/*        move(step1, "left");
+        move(mid1, "left");
+        move(mid1, "right");
+        move(step2, "backward");
+*/
 
         /*if(rsp == 2) {
             move(frstTrn, "right_turn");
             move(-frstTrn, "right_turn");
         } else if (rsp == 1) {
-            move(mId, "left");
-            move(midBck, "right");
+            resetEncoders();
+        startEncoders();
+
+        FR.setTargetPosition((int) (TPI * step1));
+        FL.setTargetPosition((int) (-TPI * step1));
+        BR.setTargetPosition((int) (-TPI * step1));
+        BL.setTargetPosition((int) (TPI * step1));
+
+        FR.setPower(speed);
+        FL.setPower(-speed);
+        BR.setPower(-speed);
+        BL.setPower(speed);
+
+        runEncoders();
+        while (FR.isBusy() || FL.isBusy() || BR.isBusy() || BL.isBusy()) {
+            FR.setPower(speed);
+            FL.setPower(-speed);
+            BR.setPower(-speed);
+            BL.setPower(speed);
+        }
+        setMotorPower(0);
+
+        resetEncoders();
+        startEncoders();
+
+        FR.setTargetPosition((int) (-TPI * mid1));
+        FL.setTargetPosition((int) (TPI * mid1));
+        BR.setTargetPosition((int) (TPI * mid1));
+        BL.setTargetPosition((int) (-TPI * mid1));
+
+        FR.setPower(-speed);
+        FL.setPower(speed);
+        BR.setPower(speed);
+        BL.setPower(-speed);
+
+        runEncoders();
+        while (FR.isBusy() || FL.isBusy() || BR.isBusy() || BL.isBusy()) {
+            FR.setPower(-speed);
+            FL.setPower(speed);
+            BR.setPower(speed);
+            BL.setPower(-speed);
+        }
+        setMotorPower(0);
+
+        resetEncoders();
+        startEncoders();
+
+        FR.setTargetPosition((int) (-TPI * step2));
+        FL.setTargetPosition((int) (-TPI * step2));
+        BR.setTargetPosition((int) (-TPI * step2));
+        BL.setTargetPosition((int) (-TPI * step2));
+
+        FR.setPower(-speed);
+        FL.setPower(-speed);
+        BR.setPower(-speed);
+        BL.setPower(-speed);
+
+        runEncoders();
+        while (FR.isBusy() || FL.isBusy() || BR.isBusy() || BL.isBusy()) {
+            FR.setPower(-speed);
+            FL.setPower(-speed);
+            BR.setPower(-speed);
+            BL.setPower(-speed);
+        }
+        setMotorPower(0);
         } else if (rsp == 0) {
             move(frstTrn, "left_turn");
             move(-frstTrn, "left_turn");
@@ -270,9 +455,9 @@ public class stAuto extends LinearOpMode {
             Scalar midavg = Core.mean(midCrop);
             Scalar rightavg = Core.mean(rightCrop);
 
-            leftavgfin = Math.ceil((leftavg.val[0]) + 1);
-            midavgfin = Math.ceil((midavg.val[0]));
-            rightavgfin = Math.ceil((rightavg.val[0]) + 4);
+            leftavgfin = Math.ceil((leftavg.val[0]));
+            midavgfin = Math.ceil((midavg.val[0]) + 1);
+            rightavgfin = Math.ceil((rightavg.val[0]) + 6);
 
             if (rightavgfin > leftavgfin && rightavgfin > midavgfin) {
                 telemetry.addLine("It is on the right side");

@@ -43,10 +43,10 @@ public class blueStuff extends LinearOpMode {
 
         // Assigning all of the servos, motors, and camera
         //DRIVE TRAIN
-        FR = hardwareMap.dcMotor.get("rightFront");
-        FL = hardwareMap.dcMotor.get("Buh");
-        BR = hardwareMap.dcMotor.get("rightBack");
-        BL = hardwareMap.dcMotor.get("Bruh");
+        FR = hardwareMap.get(DcMotor.class, "rightFront");
+        FL = hardwareMap.get(DcMotor.class, "leftFront");
+        BR = hardwareMap.get(DcMotor.class, "rightBack");
+        BL = hardwareMap.get(DcMotor.class, "leftBack");
         //OTHER
         CM = hardwareMap.dcMotor.get("ch");
         HM = hardwareMap.dcMotor.get("hoist");
