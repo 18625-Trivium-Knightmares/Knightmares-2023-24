@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.auto.BlueFarSide;
+package org.firstinspires.ftc.teamcode.BlueFarSide;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -45,9 +45,11 @@ public class spikeMid extends LinearOpMode {
             // Post Initialization:
             waitForStart();
 
+
             moveDriveTrain("left", 33.5, 0.4);
-            moveDriveTrain("right", 2, 0.4);
-            moveDriveTrain("backward", 2, 0.5);
+            moveDriveTrain("right", 2.5, 0.4);
+            sleep(10000);
+            moveDriveTrain("backward", 80, 0.5);
 
         }
 

@@ -20,9 +20,9 @@ import org.openftc.easyopencv.OpenCvPipeline;
 import org.openftc.easyopencv.OpenCvWebcam;
 
 
-@Autonomous (name = "Blue close")
+@Autonomous (name = "red close")
 @Config
-public class stAuto extends LinearOpMode {
+public class reddy extends LinearOpMode {
 
     //METHODS
 
@@ -162,24 +162,102 @@ public class stAuto extends LinearOpMode {
         webcam.stopStreaming(); // stops camera so that it's set in stone
 
         if (rsp == 0) {
-            moveDriveTrain("left", 24.5, 0.5);
-            moveDriveTrain("backward", 14.5, 0.3);
-            moveDriveTrain("right", 2.5, 0.5);
-            moveDriveTrain("backward", 20, 0.5);
-        }else if (rsp == 1) {
+            moveDriveTrain("backward", 3, 0.3);
+            moveDriveTrain("left", 33.5, 0.3);
+            moveDriveTrain("right", 3, 0.3);
+            moveDriveTrain("forward", 38.5, 0.4);
+            moveDriveTrain("left", 4, 0.4);
 
+            chain.setTargetPosition(-650);
+            chain.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            chain.setPower(0.2);
+            while (chain.isBusy()) {
+            }
+            chain.setPower(0);
 
-            moveDriveTrain("left", 33.5, 0.2);
-            moveDriveTrain("right", 2.5, 0.2);
+            slide.setTargetPosition(750);
+            slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            slide.setPower(0.4);
+            while (slide.isBusy()) {
+            }
+            slide.setPower(0);
+
+            Claw.setPosition(closeClaw);
 
             sleep(500);
 
-            moveDriveTrain("forward", 35.5, 0.4);
+            slide.setTargetPosition(0);
+            slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            slide.setPower(0.4);
+            while (slide.isBusy()) {
+            }
+            slide.setPower(0);
+
+            chain.setTargetPosition(0);
+            chain.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            chain.setPower(0.2);
+            while (chain.isBusy()) {
+            }
+            chain.setPower(0);
+
+
+            moveDriveTrain("backward", 0.5, 0.4);
+            moveDriveTrain("right", 30, 0.3);
+            moveDriveTrain("forward", 7.5, 0.5);
+        }else if (rsp == 1) {
+            moveDriveTrain("backward", 3, 0.3);
+            moveDriveTrain("left", 33.5, 0.3);
+            moveDriveTrain("right", 3, 0.3);
+            moveDriveTrain("forward", 38.5, 0.4);
+            moveDriveTrain("left", 4, 0.4);
+
+            chain.setTargetPosition(-650);
+            chain.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            chain.setPower(0.2);
+            while (chain.isBusy()) {
+            }
+            chain.setPower(0);
+
+            slide.setTargetPosition(750);
+            slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            slide.setPower(0.4);
+            while (slide.isBusy()) {
+            }
+            slide.setPower(0);
+
+            Claw.setPosition(closeClaw);
+
+            sleep(500);
+
+            slide.setTargetPosition(0);
+            slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            slide.setPower(0.4);
+            while (slide.isBusy()) {
+            }
+            slide.setPower(0);
+
+            chain.setTargetPosition(0);
+            chain.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            chain.setPower(0.2);
+            while (chain.isBusy()) {
+            }
+            chain.setPower(0);
+
+
+            moveDriveTrain("backward", 0.5, 0.4);
+            moveDriveTrain("right", 30, 0.3);
+            moveDriveTrain("forward", 7.5, 0.5);
+
+
         } else if (rsp == 2) {
-            moveDriveTrain("left", 29, 0.2);
-            moveDriveTrain("forward", 11.5, 0.15);
-            moveDriveTrain("right", 1, 0.2);
-            moveDriveTrain("backward", 33.5, 0.5);
+            moveDriveTrain("forward", 7, 0.2);
+            moveDriveTrain("left", 31.5, 0.3);
+            moveDriveTrain("right", 1.5, 0.3);
+            moveDriveTrain("forward", 30, 0.3);
+
+            moveDriveTrain("backward", 0.5, 0.4);
+            moveDriveTrain("right", 26, 0.3);
+            moveDriveTrain("forward", 7.5, 0.5);
         }
 
 
@@ -197,7 +275,7 @@ public class stAuto extends LinearOpMode {
         double midavgfin;
         double rightavgfin;
         Mat outPut = new Mat();
-        Scalar rectColor = new Scalar(0.0, 0.0, 100.0);
+        Scalar rectColor = new Scalar(230.0, 0.0, 0.0);
 
         public Mat processFrame(Mat input) {
             Imgproc.cvtColor(input, YCbCr, Imgproc.COLOR_RGB2YCrCb);
@@ -225,16 +303,16 @@ public class stAuto extends LinearOpMode {
             Scalar rightavg = Core.mean(rightCrop);
 
             leftavgfin = Math.ceil((leftavg.val[0]));
-            midavgfin = Math.ceil((midavg.val[0]) + 1);
-            rightavgfin = Math.ceil((rightavg.val[0]));
+            midavgfin = Math.ceil((midavg.val[0]) + 2);
+            rightavgfin = Math.ceil((rightavg.val[0]) + 5);
 
-            if (rightavgfin > leftavgfin && rightavgfin > midavgfin) {
+            if (rightavgfin < leftavgfin && rightavgfin < midavgfin) {
                 telemetry.addLine("It is on the right side");
                 spikePlacement = 2;
-            } else if (leftavgfin > rightavgfin && leftavgfin > midavgfin) {
+            } else if (leftavgfin < rightavgfin && leftavgfin < midavgfin) {
                 telemetry.addLine("It is on the left side");
                 spikePlacement = 0;
-            } else if (midavgfin > rightavgfin && midavgfin > leftavgfin) {
+            } else if (midavgfin < rightavgfin && midavgfin < leftavgfin) {
                 telemetry.addLine("It is in the middle");
                 spikePlacement = 1;
             } else {

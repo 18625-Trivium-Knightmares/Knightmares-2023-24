@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.auto.BlueCloseSide;
+package org.firstinspires.ftc.teamcode.BlueCloseSide;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;

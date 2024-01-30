@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.auto.BlueCloseSide;
+package org.firstinspires.ftc.teamcode.BlueCloseSide;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -50,7 +50,7 @@ public class blueSpikeMid extends LinearOpMode {
 
             sleep(500);
 
-            moveDriveTrain("forward", 36, 0.4);
+            moveDriveTrain("backward", 36, 0.4);
 
 
         }

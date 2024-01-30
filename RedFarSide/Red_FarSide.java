@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.auto.RedFarSide;
+package org.firstinspires.ftc.teamcode.RedFarSide;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
