@@ -7,8 +7,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
+@TeleOp (group = "extra", name = "early scarp teleOp")
 @Disabled
-@TeleOp
 public class test extends LinearOpMode {
     DcMotor FR, FL, BR, BL, actu, hoi, ch;
 

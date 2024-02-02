@@ -1,11 +1,13 @@
 package org.firstinspires.ftc.teamcode.extra;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
-@TeleOp (name = "Encoder Test")
+@TeleOp (group = "extra", name = "Harrison's Presets Encoder Test")
+@Disabled
 public class encoders_test extends LinearOpMode {
     // Initialization:
     DcMotor FR, FL, BR, BL, hoist, chain, actuator, slide;

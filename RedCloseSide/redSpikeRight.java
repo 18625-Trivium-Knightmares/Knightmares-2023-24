@@ -1,12 +1,14 @@
 package org.firstinspires.ftc.teamcode.RedCloseSide;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
-@Autonomous(name = "Red Close Side Right")
+@Autonomous(group = "encoderTests", name = "encoders: back-red-rightSpike")
+@Disabled
 public class redSpikeRight extends LinearOpMode {
 
             // Variables:

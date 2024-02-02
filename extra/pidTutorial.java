@@ -7,8 +7,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+@Autonomous (group = "extra", name = "pid stuff")
 @Disabled
-@Autonomous
 public class pidTutorial extends LinearOpMode {
 
     DcMotorEx motor;

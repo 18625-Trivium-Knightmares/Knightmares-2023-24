@@ -11,7 +11,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 
-@TeleOp(name = "Field Centric Drive Main")
+@TeleOp(group = "realTele", name = "TeleOp - FIELDC")
 public class harrison_fieldCentric extends LinearOpMode {
 
     // Declaring Variables

@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.drive;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
 /*
@@ -16,9 +15,7 @@ import com.qualcomm.robotcore.hardware.PIDFCoefficients;
  * These are not the only parameters; some are located in the localizer classes, drive base classes,
  * and op modes themselves.
  */
-
-@Disabled
-//@Config
+@Config
 public class DriveConstants {
 
     /*
@@ -36,8 +33,8 @@ public class DriveConstants {
      * from DriveVelocityPIDTuner.
      */
     public static final boolean RUN_USING_ENCODER = true;
-    public static PIDFCoefficients MOTOR_VELO_PID = new PIDFCoefficients(13.85, 0, 10.90,
-            13.15);
+    public static PIDFCoefficients MOTOR_VELO_PID = new PIDFCoefficients(19, 0, 15,
+            /*getMotorVelocityF(MAX_RPM / 60 * TICKS_PER_REV)*/ 12.5);
 
     /*
      * These are physical constants that can be determined from your robot (including the track
@@ -49,7 +46,7 @@ public class DriveConstants {
      */
     public static double WHEEL_RADIUS = 2; // in
     public static double GEAR_RATIO = 1; // output (wheel) speed / input (motor) speed
-    public static double TRACK_WIDTH = 13.5; // in
+    public static double TRACK_WIDTH = 14.5; // in
 
     /*
      * These are the feedforward parameters used to model the drive motor behavior. If you are using
@@ -68,10 +65,10 @@ public class DriveConstants {
      * small and gradually increase them later after everything is working. All distance units are
      * inches.
      */
-    public static double MAX_VEL = 43.5;
-    public static double MAX_ACCEL = 43.5;
-    public static double MAX_ANG_VEL = /*Math.toRadians(19.85)*/19.85;
-    public static double MAX_ANG_ACCEL =/* Math.toRadians(19.85)*/ 19.85;
+    public static double MAX_VEL = 51.9;
+    public static double MAX_ACCEL = 51.9;
+    public static double MAX_ANG_VEL = /*Math.toRadians(*/19.85;
+    public static double MAX_ANG_ACCEL = /*Math.toRadians(*/19.85;
 
     /*
      * Adjust the orientations here to match your robot. See the FTC SDK documentation for details.

@@ -1,12 +1,14 @@
 package org.firstinspires.ftc.teamcode.BlueCloseSide;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
-@Autonomous (name = "Blue Close Right")
+@Autonomous(group = "encoderTests", name = "encoders: back-blue-rightSpike")
+@Disabled
 public class blueSpikeRight extends LinearOpMode {
     // Variables:
     DcMotor FR, FL, BR, BL;

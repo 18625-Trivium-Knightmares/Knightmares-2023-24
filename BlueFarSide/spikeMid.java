@@ -1,13 +1,14 @@
 package org.firstinspires.ftc.teamcode.BlueFarSide;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
-@Autonomous(name = "Blue Far Side Mid")
-
+@Autonomous(group = "encoderTests", name = "encoders: front-blue-midSpike")
+@Disabled
 public class spikeMid extends LinearOpMode {
 
         // Variables:

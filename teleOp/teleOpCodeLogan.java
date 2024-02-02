@@ -8,9 +8,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
-@Disabled
-@TeleOp(name = "Old Tank Drive")
-
+@TeleOp(group = "realTele", name = "Tank Drive")
+//@Disabled
 public class teleOpCodeLogan extends LinearOpMode {
     /**
      * ALL THE VARIABLES

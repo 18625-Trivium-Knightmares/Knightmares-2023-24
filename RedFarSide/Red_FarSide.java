@@ -7,8 +7,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
+@Autonomous(group = "encoderTests", name = "encoders: front-red-midSpike")
 @Disabled
-
 public class Red_FarSide extends LinearOpMode {
     // Variables:
 

@@ -1,12 +1,14 @@
 package org.firstinspires.ftc.teamcode.BlueCloseSide;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
-@Autonomous(name = "Close Blue Mid")
+@Autonomous(group = "encoderTests", name = "encoders: back-blue-midSpike")
+@Disabled
 public class blueSpikeMid extends LinearOpMode {
 
         // Variables:
