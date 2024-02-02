@@ -1,28 +1,33 @@
 package org.firstinspires.ftc.teamcode.teleOp;
 
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 
-@TeleOp (name = "Robot Centric Drive")
-public class teleOpCode extends LinearOpMode {
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
+
+@TeleOp(name = "Field Centric Drive Main")
+public class harrison_fieldCentric extends LinearOpMode {
+
+    // Declaring Variables
     DcMotor FR, FL, BR, BL;
     DcMotor actuator, slide, chain, hoist;
     Servo claw, drone;
-
-    public static double newTarget;
-    public static double launch = 0.5;
-    public static double set = 0.01;
+    IMU imu;
+    IMU.Parameters myIMUparameters;
     double openClaw = 0.75;
     double closeClaw = 0.01;
+    public static double launch = 0.5;
+    public static double set = 0.01;
 
     @Override
     public void runOpMode() throws InterruptedException {
-        // Assigning all of the servos and motors
-
+        // Configuring Electronics;
         // Chassis
         FR = hardwareMap.get(DcMotor.class, "rightFront");
         FL = hardwareMap.get(DcMotor.class, "leftFront");
@@ -45,28 +50,49 @@ public class teleOpCode extends LinearOpMode {
         resetActuator();
         resetHoist();
 
-       telemetry.addData("NOTE", "Make sure to reset the positions of the chain, actuator, hoist, and slides!");
-       telemetry.update();
+        // IMU
+        imu = hardwareMap.get(IMU.class, "imu"); // Initializing IMU in Drivers Hub
+        // Reconfiguring IMU orientation
+        myIMUparameters = new IMU.Parameters(
+                new RevHubOrientationOnRobot(
+                        RevHubOrientationOnRobot.LogoFacingDirection.RIGHT,
+                        RevHubOrientationOnRobot.UsbFacingDirection.UP
+                )
+        );
+        imu.initialize(myIMUparameters);
+        imu.resetYaw();
 
-        waitForStart(); // When the start button is pressed
+        telemetry.addData("NOTE", "Make sure to reset the positions of the chain, actuator, hoist, and slides!");
+        telemetry.update();
 
+        waitForStart();
             while (opModeIsActive()) {
-
-                // Drive Train
-                double horizontal = gamepad1.left_stick_x * 1;
+                double botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
                 double vertical = -gamepad1.left_stick_y * 1;
+                double horizontal = gamepad1.left_stick_x * 1;
                 double pivot = gamepad1.right_stick_x * 1;
 
-                FL.setPower(horizontal + vertical + pivot);
-                BL.setPower(-horizontal + vertical + pivot);
-                FR.setPower(-horizontal + vertical - pivot);
-                BR.setPower(vertical + horizontal - pivot);
-
                 if (gamepad1.right_trigger > 0) {
-                    horizontal = gamepad1.left_stick_x * 0.5;
                     vertical = -gamepad1.left_stick_y * 0.5;
+                    horizontal = gamepad1.left_stick_x * 0.5;
                     pivot = gamepad1.right_stick_x * 0.5;
                 }
+
+                // Kinematics (Counter-acting angle of robot's heading)
+                double newVertical = horizontal * Math.sin(-botHeading) + vertical * Math.cos(-botHeading);
+                double newHorizontal = horizontal * Math.cos(-botHeading) - vertical * Math.sin(-botHeading);
+
+                // Setting Field Centric Drive
+                FL.setPower(newVertical + newHorizontal + pivot);
+                FR.setPower(newVertical - newHorizontal - pivot);
+                BL.setPower(newVertical - newHorizontal + pivot);
+                BR.setPower(newVertical + newHorizontal - pivot);
+
+                // Resetting "Forwards" Configuration
+                if (gamepad1.start) {
+                    imu.resetYaw();
+                }
+
                 if (gamepad1.dpad_up) {
                     setHoistTarget(-214, 0.75);
                     setActuatorTarget(6050, 0.65);
@@ -110,11 +136,8 @@ public class teleOpCode extends LinearOpMode {
                     claw.setPosition(openClaw);
                 }
 
-                }
             }
-
-
-            // METHODS:
+    }
     public void resetChain() {
         chain.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         chain.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -146,7 +169,10 @@ public class teleOpCode extends LinearOpMode {
         actuator.setPower(0);
     }
 
-    }
+}
+
+
+
 
 
 
