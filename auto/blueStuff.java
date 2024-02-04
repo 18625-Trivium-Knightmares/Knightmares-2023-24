@@ -20,8 +20,8 @@ import org.openftc.easyopencv.OpenCvPipeline;
 import org.openftc.easyopencv.OpenCvWebcam;
 
 @Autonomous (group = "AUTO", name="blue close")
-//@Config
-@Disabled
+@Config
+// @Disabled
 public class blueStuff extends LinearOpMode {
     int spikePlacement;
     int rsp;
