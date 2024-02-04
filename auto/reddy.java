@@ -22,8 +22,8 @@ import org.openftc.easyopencv.OpenCvWebcam;
 
 
 @Autonomous (group = "AUTO", name = "red close")
-//@Config
-@Disabled
+@Config
+// @Disabled
 public class reddy extends LinearOpMode {
 
     //METHODS
