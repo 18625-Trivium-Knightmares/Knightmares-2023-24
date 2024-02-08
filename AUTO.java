@@ -21,19 +21,25 @@ import org.openftc.easyopencv.OpenCvPipeline;
 import org.openftc.easyopencv.OpenCvWebcam;
 import org.openftc.easyopencv.PipelineRecordingParameters;
 
-@Autonomous (group = "extra", name = "Color Tests (current red-230.0)")
+@Autonomous (group = "extra", name = "AUTO")
 @Config
 //@Disabled
-public class autoTest extends LinearOpMode {
+public class AUTO extends LinearOpMode {
     /**
      * VARIABLES
      */
+    // MOTORS AND SERVO
     public static double redLeft = 0.5;
     public static double redMid = -4;
     public static double redRight = 0;
-    public static double blueLeft = 6;
-    public static double blueMid = 1;
-    public static double blueRight = 3;
+
+    public enum Randomization {
+        RIGHT,
+        MIDDLE,
+        LEFT,
+        IDK
+    }
+    Randomization randomization = Randomization.IDK;
 
     // declaring webcam
     OpenCvWebcam webcam = null;
@@ -65,9 +71,13 @@ public class autoTest extends LinearOpMode {
             }
         });
 
+
+
         waitForStart();
 
         webcam.stopStreaming();
+
+
     }
 
     /**
@@ -83,19 +93,9 @@ public class autoTest extends LinearOpMode {
         double leftavgfin;
         double midavgfin;
         double rightavgfin;
-
-        /*Mat leftCropB;
-        Mat midCropB;
-        Mat rightCropB;
-
-        double leftavgfinB;
-        double midavgfinB;
-        double rightavgfinB;*/
-
         Mat outPut = new Mat();
 
-        Scalar rectColor = new Scalar(0.0, 0.0, 100.0);
-//        Scalar rectColorB = new Scalar(0.0, 0.0, 100.0);
+        Scalar rectColor = new Scalar(230.0, 0.0, 0.0);
 
         public Mat processFrame(Mat input) {
             Imgproc.cvtColor(input, YCbCr, Imgproc.COLOR_RGB2YCrCb);
@@ -122,77 +122,27 @@ public class autoTest extends LinearOpMode {
             Scalar midavg = Core.mean(midCrop);
             Scalar rightavg = Core.mean(rightCrop);
 
-            leftavgfin = Math.round((leftavg.val[0]) + blueLeft);
-            midavgfin = Math.round((midavg.val[0]) + blueMid);
-            rightavgfin = Math.round((rightavg.val[0]) + blueRight);
+            leftavgfin = Math.round((leftavg.val[0]) + redLeft);
+            midavgfin = Math.round((midavg.val[0]) + redMid);
+            rightavgfin = Math.round((rightavg.val[0]) + redRight);
 
-            double leftAdd = 0.0;
-            double midAdd = Math.round((leftavg.val[0])) - Math.round((midavg.val[0]));
-            double rightAdd = Math.round((leftavg.val[0])) - Math.round((rightavg.val[0]));
-
-            if (rightavgfin > leftavgfin && rightavgfin > midavgfin) {
+            if (rightavgfin < leftavgfin && rightavgfin < midavgfin) {
                 telemetry.addLine("It is on the right side");
-            } else if (leftavgfin > rightavgfin && leftavgfin > midavgfin) {
+                randomization = Randomization.RIGHT;
+            } else if (leftavgfin < rightavgfin && leftavgfin < midavgfin) {
                 telemetry.addLine("It is on the left side");
-            }  else if (midavgfin > rightavgfin && midavgfin > leftavgfin){
+                randomization = Randomization.LEFT;
+            } else if (midavgfin < rightavgfin && midavgfin < leftavgfin){
                 telemetry.addLine("It is in the middle");
+                randomization = Randomization.MIDDLE;
             } else {
                 telemetry.addLine("I guess we're going for the middle");
+                randomization = Randomization.IDK;
             }
             telemetry.addLine("left is: " + String.valueOf(leftavgfin));
             telemetry.addLine("mid is: " + String.valueOf(midavgfin));
             telemetry.addLine("right is: " + String.valueOf(rightavgfin));
-
-            telemetry.addLine("Add " + rightAdd + " to the right for red");
-            telemetry.addLine("Add " + midAdd + " to the middle for red");
-            telemetry.addLine("Add " + leftAdd + " to the left for red");
             telemetry.update();
-
-
-/*
-
-            input.copyTo(outPut);
-            Imgproc.rectangle(outPut, leftRect, rectColorB, 2);
-            Imgproc.rectangle(outPut, midRec, rectColorB, 2);
-            Imgproc.rectangle(outPut, rightRect, rectColorB, 2);
-
-            leftCropB = YCbCr.submat(leftRect);
-            midCropB = YCbCr.submat(midRec);
-            rightCropB = YCbCr.submat(rightRect);
-
-            Core.extractChannel(leftCropB, leftCropB, 2);
-            Core.extractChannel(midCropB, midCropB, 2);
-            Core.extractChannel(rightCropB, rightCropB, 2);
-
-            Scalar leftavgB = Core.mean(leftCropB);
-            Scalar midavgB = Core.mean(midCropB);
-            Scalar rightavgB = Core.mean(rightCropB);
-
-            leftavgfinB = Math.round((leftavgB.val[0]) + blueLeft);
-            midavgfinB = Math.round((midavgB.val[0]) + blueMid);
-            rightavgfinB = Math.round((rightavgB.val[0]) + blueRight);
-
-            double leftAddB = 0.0;
-            double midAddB = Math.round((leftavgB.val[0])) - Math.round((midavgB.val[0]));
-            double rightAddB = Math.round((leftavgB.val[0])) - Math.round((rightavgB.val[0]));
-
-            if (rightavgfinB > leftavgfinB && rightavgfinB > midavgfinB) {
-                telemetry.addLine("It is on the right side");
-            } else if (leftavgfinB > rightavgfinB && leftavgfinB > midavgfinB) {
-                telemetry.addLine("It is on the left side");
-            }  else if (midavgfinB > rightavgfinB && midavgfinB > leftavgfinB){
-                telemetry.addLine("It is in the middle");
-            } else {
-                telemetry.addLine("I guess we're going for the middle");
-            }
-            telemetry.addLine("left is: " + String.valueOf(leftavgfinB));
-            telemetry.addLine("mid is: " + String.valueOf(midavgfinB));
-            telemetry.addLine("right is: " + String.valueOf(rightavgfinB));
-
-            telemetry.addLine("Add " + rightAddB + " to the left for red");
-            telemetry.addLine("Add " + midAddB + " to the left for middle");
-            telemetry.addLine("Add " + leftAddB + " to the left for left");
-            telemetry.update();*/
 
             return outPut;
         }
