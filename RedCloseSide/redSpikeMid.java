@@ -1,14 +1,12 @@
-package org.firstinspires.ftc.teamcode.RedCloseSide;
+package org.firstinspires.ftc.teamcode.auto.RedCloseSide;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
-@Autonomous(group = "encoderTests", name = "encoders: back-red-midSpike")
-@Disabled
+@Autonomous(name = "Red Close Side Mid")
 public class redSpikeMid extends LinearOpMode {
 
         // Variables:
@@ -17,6 +15,7 @@ public class redSpikeMid extends LinearOpMode {
         DcMotor actuator, hoist, chain, slide;
         Servo claw, drone;
         double ticksPerInch = 45.3;
+        double ticksPerTurn = 407.7;
 
 
         public void runOpMode() throws InterruptedException {
@@ -39,6 +38,11 @@ public class redSpikeMid extends LinearOpMode {
             FL.setDirection(DcMotorSimple.Direction.REVERSE);
             BL.setDirection(DcMotorSimple.Direction.REVERSE);
 
+            FR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            FL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            BR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            FL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
             claw.setPosition(0.1);
 
             useEncoders();
@@ -52,47 +56,25 @@ public class redSpikeMid extends LinearOpMode {
 
             waitForStart();
 
-            moveDriveTrain("backward", 3, 0.3);
-            moveDriveTrain("left", 35.5, 0.3);
-            moveDriveTrain("right", 3, 0.3);
-            moveDriveTrain("forward", 38.5, 0.4);
-            moveDriveTrain("left", 4, 0.4);
+            moveDriveTrain("backward", 4, 0.2);
+            moveDriveTrain("left", 33.5, 0.3);
+            moveDriveTrain("right", 5, 0.3);
+            sleep(200);
+            moveDriveTrain("forward", 38, 0.5);
+            sleep(200);
+            moveDriveTrain("left", 9, 0.4);
+            moveDriveTrain("forward", 0.5, 0.2);
 
-            chain.setTargetPosition(-550);
-            chain.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            chain.setPower(0.2);
-            while (chain.isBusy()) {
-            }
-            chain.setPower(0);
-
-            slide.setTargetPosition(700);
-            slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            slide.setPower(0.4);
-            while (slide.isBusy()) {
-            }
-            slide.setPower(0);
-
-            claw.setPosition(0.7);
-
-            slide.setTargetPosition(0);
-            slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            slide.setPower(0.4);
-            while (slide.isBusy()) {
-            }
-            slide.setPower(0);
-
-            chain.setTargetPosition(0);
-            chain.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            chain.setPower(0.2);
-            while (chain.isBusy()) {
-            }
-            chain.setPower(0);
-
+            moveArm();
+            sleep(500);
+            moveDriveTrain("backward", 2, 0.5);
+            moveArmDown();
 
             moveDriveTrain("backward", 0.5, 0.4);
             moveDriveTrain("right", 30, 0.3);
             moveDriveTrain("forward", 7.5, 0.5);
-
+            // moveDriveTrain("backward", 30, 0.5);
+            turnDriveTrain("left", 2);
         }
 
         // METHODS
@@ -120,6 +102,7 @@ public class redSpikeMid extends LinearOpMode {
         public void setTarget(double FLpower,  double FRpower , double BLpower, double BRpower) {
             FL.setTargetPosition((int) FLpower);
             FR.setTargetPosition((int) FRpower);
+
             BL.setTargetPosition((int) BLpower);
             BR.setTargetPosition((int) BRpower);
         }
@@ -153,6 +136,53 @@ public class redSpikeMid extends LinearOpMode {
             resetEncoders();
             setDrivePower(0);
         }
+
+    public void moveArm() {
+            // -750 old value
+        chain.setTargetPosition(-780);
+        chain.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        chain.setPower(1);
+        while (chain.isBusy()) {
+        }
+
+        claw.setPosition(0.5);
+
+        sleep(500);
+
+        chain.setPower(0);
+        slide.setPower(0);
+    }
+
+    public void moveArmDown() {
+         slide.setTargetPosition(0);
+         slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+         slide.setPower(0.5);
+         while (slide.isBusy()) {
+         }
+         slide.setPower(0);
+
+        chain.setTargetPosition(-55);
+        chain.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        chain.setPower(0.5);
+        while (chain.isBusy()) {
+        }
+        chain.setPower(0);
+    }
+
+    public void turnDriveTrain(String direction, double turnNumber) {
+        double newTarget = turnNumber * ticksPerTurn;
+        if (direction.equals("left")) {
+            setTarget(-newTarget, newTarget, -newTarget, newTarget);
+        } else if (direction.equals("right")) {
+            setTarget(newTarget, -newTarget, newTarget, -newTarget);
+        }
+
+        runToPosition();
+        setDrivePower(0.5);
+        while (FR.isBusy() && FL.isBusy() && BR.isBusy() && BL.isBusy()) {
+        }
+        setDrivePower(0);
+    }
 
     }
 

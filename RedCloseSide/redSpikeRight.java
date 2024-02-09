@@ -1,14 +1,12 @@
-package org.firstinspires.ftc.teamcode.RedCloseSide;
+package org.firstinspires.ftc.teamcode.auto.RedCloseSide;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
-@Autonomous(group = "encoderTests", name = "encoders: back-red-rightSpike")
-@Disabled
+@Autonomous(name = "Red Close Side Right")
 public class redSpikeRight extends LinearOpMode {
 
             // Variables:
@@ -17,6 +15,8 @@ public class redSpikeRight extends LinearOpMode {
             DcMotor actuator, hoist, chain, slide;
             Servo claw, drone;
             double ticksPerInch = 45.3;
+
+            double ticksPerTurn = 407.7;
 
             public void runOpMode() throws InterruptedException {
 
@@ -38,6 +38,11 @@ public class redSpikeRight extends LinearOpMode {
                 FL.setDirection(DcMotorSimple.Direction.REVERSE);
                 BL.setDirection(DcMotorSimple.Direction.REVERSE);
 
+                FR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+                FL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+                BR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+                FL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
                 claw.setPosition(0.1);
 
                 useEncoders();
@@ -49,15 +54,25 @@ public class redSpikeRight extends LinearOpMode {
                 // Post Initialization:
 
                 waitForStart();
+                // Place Purple Pixel
+                moveDriveTrain("left", 29.5, 0.2);
+                moveDriveTrain("forward", 4.5, 0.2);
+                moveDriveTrain("right", 3.1, 0.15);
+                sleep(200);
+                // Go to Backdrop
+                moveDriveTrain("forward", 32, 0.3);
 
-                moveDriveTrain("forward", 7, 0.2);
-                moveDriveTrain("left", 31.5, 0.3);
-                moveDriveTrain("right", 1.5, 0.3);
-                moveDriveTrain("forward", 30, 0.3);
+                moveArm();
+                moveArmDown();
 
-                moveDriveTrain("backward", 0.5, 0.4);
-                moveDriveTrain("right", 26, 0.3);
-                moveDriveTrain("forward", 7.5, 0.5);
+                moveDriveTrain("backward", 2, 0.5);
+                moveDriveTrain("right", 25, 0.3);
+                // moveDriveTrain("backward", 24, 0.5);
+                moveDriveTrain("forward", 10, 0.5);
+
+                turnDriveTrain("left", 2);
+
+
 
             }
 
@@ -119,6 +134,53 @@ public class redSpikeRight extends LinearOpMode {
                 resetEncoders();
                 setDrivePower(0);
             }
+
+    public void moveArm() {
+        chain.setTargetPosition(-790);
+        chain.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        chain.setPower(1);
+        while (chain.isBusy()) {
+        }
+
+        sleep(500);
+
+        claw.setPosition(0.5);
+
+        sleep(500);
+
+        chain.setPower(0);
+    }
+
+    public void moveArmDown() {
+        slide.setTargetPosition(0);
+        slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        slide.setPower(0.5);
+        while (slide.isBusy()) {
+        }
+        slide.setPower(0);
+
+        chain.setTargetPosition(-55);
+        chain.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        chain.setPower(0.5);
+        while (chain.isBusy()) {
+        }
+        chain.setPower(0);
+    }
+    public void turnDriveTrain(String direction, double turnNumber) {
+        double newTarget = turnNumber * ticksPerTurn;
+        if (direction.equals("left")) {
+            setTarget(-newTarget, newTarget, -newTarget, newTarget);
+        } else if (direction.equals("right")) {
+            setTarget(newTarget, -newTarget, newTarget, -newTarget);
+        }
+
+        runToPosition();
+        setDrivePower(0.5);
+        while (FR.isBusy() && FL.isBusy() && BR.isBusy() && BL.isBusy()) {
+        }
+        setDrivePower(0);
+    }
+
 
         }
 

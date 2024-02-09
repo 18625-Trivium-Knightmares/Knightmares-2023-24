@@ -1,14 +1,12 @@
-package org.firstinspires.ftc.teamcode.RedCloseSide;
+package org.firstinspires.ftc.teamcode.auto.RedCloseSide;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
-@Autonomous(group = "encoderTests", name = "encoders: back-red-leftSpike")
-@Disabled
+@Autonomous(name = "Red Close Side Left")
 public class redSpikeLeft extends LinearOpMode {
 
         // Variables:
@@ -17,6 +15,7 @@ public class redSpikeLeft extends LinearOpMode {
         DcMotor actuator, hoist, chain, slide;
         Servo claw, drone;
         double ticksPerInch = 45.3;
+        double ticksPerTurn = 407.7;
 
 
         public void runOpMode() throws InterruptedException {
@@ -39,6 +38,11 @@ public class redSpikeLeft extends LinearOpMode {
             FL.setDirection(DcMotorSimple.Direction.REVERSE);
             BL.setDirection(DcMotorSimple.Direction.REVERSE);
 
+            FR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            FL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            BR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            FL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
             claw.setPosition(0.1);
 
             useEncoders();
@@ -52,50 +56,23 @@ public class redSpikeLeft extends LinearOpMode {
 
             waitForStart();
 
-            moveDriveTrain("left", 29.5, 0.3);
-            moveDriveTrain("backward", 15.5, 0.3);
-            moveDriveTrain("right", 2.5, 0.2);
-            moveDriveTrain("forward", 10, 0.5);
-            moveDriveTrain("left", 8, 0.5);
-            moveDriveTrain("forward", 36.5, 0.5);
+            moveDriveTrain("left", 30.5, 0.3);
+            moveDriveTrain("backward", 19, 0.1);
+            moveDriveTrain("right", 3.5, 0.2);
+            moveDriveTrain("forward", 53.5, 0.5);
+            moveDriveTrain("left", 14.5, 0.2);
+            moveDriveTrain("forward", 1, 0.2);
+            // place yellow pixel
+            moveArm();
+            moveArmDown();
+            // PARK
+            moveDriveTrain("right", 38, 0.3);
+            moveDriveTrain("forward", 7.5, 0.5);
+           //  moveDriveTrain("backward", 30, 0.5);
 
-            sleep(1000);
-            chain.setTargetPosition(-550);
-            chain.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            chain.setPower(0.2);
-            while (chain.isBusy()) {
-            }
-            chain.setPower(0);
-
-            slide.setTargetPosition(700);
-            slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            slide.setPower(0.4);
-            while (slide.isBusy()) {
-            }
-            slide.setPower(0);
-
-            claw.setPosition(0.7);
-
-            sleep(1000);
-
-            slide.setTargetPosition(0);
-            slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            slide.setPower(0.4);
-            while (slide.isBusy()) {
-            }
-            slide.setPower(0);
-
-            chain.setTargetPosition(0);
-            chain.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            chain.setPower(0.2);
-            while (chain.isBusy()) {
-            }
-            chain.setPower(0);
+            turnDriveTrain("left", 2);
 
 
-            moveDriveTrain("backward", 0.5, 0.4);
-            moveDriveTrain("right", 32, 0.5);
-            moveDriveTrain("forward", 4, 0.5);
 
         }
 
@@ -157,6 +134,52 @@ public class redSpikeLeft extends LinearOpMode {
             resetEncoders();
             setDrivePower(0);
         }
+
+    public void moveArm() {
+        chain.setTargetPosition(-800);
+        chain.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        chain.setPower(1);
+        while (chain.isBusy()) {
+        }
+
+        sleep(500);
+
+        claw.setPosition(0.5);
+
+        sleep(500);
+
+        chain.setPower(0);
+    }
+
+    public void moveArmDown() {
+        slide.setTargetPosition(0);
+        slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        slide.setPower(0.5);
+        while (slide.isBusy()) {
+        }
+        slide.setPower(0);
+
+        chain.setTargetPosition(-55);
+        chain.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        chain.setPower(0.5);
+        while (chain.isBusy()) {
+        }
+        chain.setPower(0);
+    }
+    public void turnDriveTrain(String direction, double turnNumber) {
+        double newTarget = turnNumber * ticksPerTurn;
+        if (direction.equals("left")) {
+            setTarget(-newTarget, newTarget, -newTarget, newTarget);
+        } else if (direction.equals("right")) {
+            setTarget(newTarget, -newTarget, newTarget, -newTarget);
+        }
+
+        runToPosition();
+        setDrivePower(0.5);
+        while (FR.isBusy() && FL.isBusy() && BR.isBusy() && BL.isBusy()) {
+        }
+        setDrivePower(0);
+    }
 
     }
 
