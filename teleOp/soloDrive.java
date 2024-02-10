@@ -10,25 +10,20 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
-
-@TeleOp(name = "Field Centric Drive Main")
-public class harrison_fieldCentric extends LinearOpMode {
-
-    // Declaring Variables
+@TeleOp(name = "Field Centric Solo")
+public class soloDrive extends LinearOpMode {
     DcMotor FR, FL, BR, BL;
     DcMotor actuator, slide, chain, hoist;
     Servo claw, drone;
-    IMU imu;
-    IMU.Parameters myIMUparameters;
-    double openClaw = 0.75;
-    double closeClaw = 0.01;
     public static double launch = 0.5;
     public static double set = 0.01;
+    double openClaw = 0.75;
+    double closeClaw = 0.01;
+    IMU imu;
+    IMU.Parameters myIMUparameters;
 
-    @Override
     public void runOpMode() throws InterruptedException {
-        // Configuring Electronics;
-        // Chassis
+
         FR = hardwareMap.get(DcMotor.class, "rightFront");
         FL = hardwareMap.get(DcMotor.class, "leftFront");
         BR = hardwareMap.get(DcMotor.class, "rightBack");
@@ -41,7 +36,6 @@ public class harrison_fieldCentric extends LinearOpMode {
         BR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         FL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        // Control Hub Motors
         hoist = hardwareMap.get(DcMotor.class, "hoist");
         chain = hardwareMap.get(DcMotor.class, "ch");
         slide = hardwareMap.get(DcMotor.class, "Slide");
@@ -56,7 +50,6 @@ public class harrison_fieldCentric extends LinearOpMode {
         resetActuator();
         resetHoist();
 
-        // IMU
         imu = hardwareMap.get(IMU.class, "imu"); // Initializing IMU in Drivers Hub
         // Reconfiguring IMU orientation
         myIMUparameters = new IMU.Parameters(
@@ -68,21 +61,12 @@ public class harrison_fieldCentric extends LinearOpMode {
         imu.initialize(myIMUparameters);
         imu.resetYaw();
 
-        telemetry.addData("NOTE", "Make sure to reset the positions of the chain, actuator, hoist, and slides!");
-        telemetry.update();
-
         waitForStart();
         while (opModeIsActive()) {
             double botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
             double vertical = -gamepad1.left_stick_y * 1;
             double horizontal = gamepad1.left_stick_x * 1;
             double pivot = gamepad1.right_stick_x * 1;
-
-            if (gamepad1.right_trigger > 0) {
-                vertical = -gamepad1.left_stick_y * 0.5;
-                horizontal = gamepad1.left_stick_x * 0.5;
-                pivot = gamepad1.right_stick_x * 0.5;
-            }
 
             // Kinematics (Counter-acting angle of robot's heading)
             double newVertical = horizontal * Math.sin(-botHeading) + vertical * Math.cos(-botHeading);
@@ -99,6 +83,8 @@ public class harrison_fieldCentric extends LinearOpMode {
                 imu.resetYaw();
             }
 
+            // BUTTONS:
+
             if (gamepad1.dpad_up) {
                 setHoistTarget(-214, 0.75);
                 setActuatorTarget(6050, 0.65);
@@ -113,11 +99,11 @@ public class harrison_fieldCentric extends LinearOpMode {
                 drone.setPosition(set);
             }
 
-            // GamePad 2 Controls:
+            double slidesUp = gamepad1.right_trigger;
+            double slidesDown = gamepad1.left_trigger;
+            double chainPower = gamepad1.right_stick_y * 0.5;
 
-            double chainPower = gamepad2.right_stick_y * 0.5;
             double chainTicks = chain.getCurrentPosition();
-            double slidePower = -gamepad2.left_stick_y;
             double slideTicks = slide.getCurrentPosition();
 
             if (chainPower < 0 && chainTicks > -1225) {
@@ -131,40 +117,20 @@ public class harrison_fieldCentric extends LinearOpMode {
                 chain.setPower(0);
             }
 
-            if (slidePower > 0 && slideTicks < 1690) {
+            if (slidesUp > 0 && slideTicks < 1690) {
                 slide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                 slide.setPower(0.4);
-            } else if (slidePower < 0 && slideTicks > 0) {
+            } else if (slidesDown > 0 && slideTicks > 0) {
                 slide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                 slide.setPower(-0.4);
             } else {
                 slide.setPower(0);
             }
-            if (gamepad2.left_bumper) {
-                claw.setPosition(closeClaw);
-            } else if (gamepad2.right_bumper) {
+
+            if (gamepad1.right_bumper) {
                 claw.setPosition(openClaw);
-            }
-
-            if (gamepad2.a) {
-                chain.setTargetPosition(-450);
-                chain.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                chain.setPower(0.5);
-                while (chain.isBusy()) {
-                    FL.setPower(newVertical + newHorizontal + pivot);
-                    FR.setPower(newVertical - newHorizontal - pivot);
-                    BL.setPower(newVertical - newHorizontal + pivot);
-                    BR.setPower(newVertical + newHorizontal - pivot);
-                }
-                chain.setPower(1);
-
-                    /* slide.setTargetPosition(770);
-                    slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                    slide.setPower(1);
-                    while (slide.isBusy()) {
-                    }
-
-                     */
+            } else if (gamepad1.left_bumper) {
+                claw.setPosition(closeClaw);
             }
 
         }
@@ -183,7 +149,7 @@ public class harrison_fieldCentric extends LinearOpMode {
     public void resetActuator() {
         actuator.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
-    public void setHoistTarget(double targetTicks, double power) {
+    public void setHoistTarget( double targetTicks, double power){
         hoist.setTargetPosition((int) targetTicks);
         hoist.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         hoist.setPower(power);
@@ -191,7 +157,8 @@ public class harrison_fieldCentric extends LinearOpMode {
         }
         hoist.setPower(0);
     }
-    public void setActuatorTarget(double targetTicks, double power) {
+
+    public void setActuatorTarget (double targetTicks, double power){
         actuator.setTargetPosition((int) targetTicks);
         actuator.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         actuator.setPower(power);
@@ -209,5 +176,6 @@ public class harrison_fieldCentric extends LinearOpMode {
         }
         actuator.setPower(0);
     }
+
 
 }
