@@ -1,125 +1,78 @@
 package org.firstinspires.ftc.teamcode.teleOp;
 
-import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
-
-@TeleOp (group = "realTele", name = "TeleOp-ROBOTC")
-//@Disabled
+@TeleOp (name = "Robot Centric Drive", group = "Robot Centric Drive")
 public class teleOpCode extends LinearOpMode {
-    /**
-     * ALL THE VARIABLES
-     */
 
-    DcMotor AM, HM, CM, SM; // All of the motors
-    public static double ticks = 384.5;
-    public static double ticks2 = 444;
+    DcMotor FR, FL, BR, BL;
+    DcMotor actuator, slide, chain, hoist;
+    Servo claw, drone;
+
     public static double newTarget;
     public static double launch = 0.5;
     public static double set = 0.01;
-    Servo Claw, drone;
-
-    public static double BRSpeed = 0.75;
-    public static double BLSpeed = 2;
-    public static double speed = 1;
-    public static double halfspeed = 0.5; //This was for the faster moving parts (Chain motor)
-    public static double openClaw = 0.001;
-    public static double closeClaw = 1;
-
-    public static double ticksHar = 537.7;
-    public static double turn = ticksHar / 2;
-    public static double Actuatorticks = 6050;
+    double openClaw = 0.75;
+    double closeClaw = 0.01;
 
     @Override
     public void runOpMode() throws InterruptedException {
         // Assigning all of the servos and motors
-        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
-        drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
+        // Chassis
+        FR = hardwareMap.get(DcMotor.class, "rightFront");
+        FL = hardwareMap.get(DcMotor.class, "leftFront");
+        BR = hardwareMap.get(DcMotor.class, "rightBack");
+        BL = hardwareMap.get(DcMotor.class, "leftBack");
+        FL.setDirection(DcMotorSimple.Direction.REVERSE);
+        BL.setDirection(DcMotorSimple.Direction.REVERSE);
+        // Control Hub Motors
+        hoist = hardwareMap.get(DcMotor.class, "hoist");
+        chain = hardwareMap.get(DcMotor.class, "ch");
+        slide = hardwareMap.get(DcMotor.class, "Slide");
+        actuator = hardwareMap.get(DcMotor.class, "actuator");
+        // Servos
+        claw = hardwareMap.get(Servo.class, "Claw");
+        drone = hardwareMap.get(Servo.class, "drones");
 
-        CM = hardwareMap.dcMotor.get("ch");
-        HM = hardwareMap.dcMotor.get("hoist");
-        AM = hardwareMap.dcMotor.get("actuator");
-        SM = hardwareMap.dcMotor.get("Slide");
-        Claw = hardwareMap.servo.get("Claw");
-        drone = hardwareMap.servo.get("drones");
+        // ENCODERS:
+        resetSlide();
+        resetChain();
+        resetActuator();
+        resetHoist();
 
-        telemetry.addData(">", "Press Play to start op mode"); // Will add stuff to the driver hub screen
-        telemetry.update(); // Will update the driver hub screen so that the above will appear
+       telemetry.addData("NOTE", "Make sure to reset the positions of the chain, actuator, hoist, and slides!");
+       telemetry.update();
 
         waitForStart(); // When the start button is pressed
 
-        if (opModeIsActive()) {
-
             while (opModeIsActive()) {
-                /**
-                 * ALL UNDER GAMEPAD 1
-                 */
 
                 // Drive Train
-                if (gamepad1.right_stick_x != 0 || gamepad1.left_stick_x != 0 || gamepad1.left_stick_y != 0) {
-                    drive.setWeightedDrivePower(
-                            new Pose2d(
-                                    -gamepad1.left_stick_y,
-                                    -gamepad1.left_stick_x,
-                                    -gamepad1.right_stick_x
-                            )
-                    );
+                double horizontal = gamepad1.left_stick_x * 1;
+                double vertical = -gamepad1.left_stick_y * 1;
+                double pivot = gamepad1.right_stick_x * 1;
 
-                    drive.update();
+                FL.setPower(horizontal + vertical + pivot);
+                BL.setPower(-horizontal + vertical + pivot);
+                FR.setPower(-horizontal + vertical - pivot);
+                BR.setPower(vertical + horizontal - pivot);
 
-                    Pose2d poseEstimate = drive.getPoseEstimate();
-                    telemetry.addData("x", poseEstimate.getX());
-                    telemetry.addData("y", poseEstimate.getY());
-                    telemetry.addData("heading", poseEstimate.getHeading());
-                    telemetry.update();
-                } else {
-                    drive.setWeightedDrivePower(
-                            new Pose2d(
-                                    0,
-                                    0,
-                                    0
-                            )
-                    );
+                if (gamepad1.right_trigger > 0) {
+                    horizontal = gamepad1.left_stick_x * 0.5;
+                    vertical = -gamepad1.left_stick_y * 0.5;
+                    pivot = gamepad1.right_stick_x * 0.5;
                 }
-
-
                 if (gamepad1.dpad_up) {
-                    HM.setTargetPosition((int) (-537.7/2.5));
-                    AM.setTargetPosition((int) Actuatorticks);
-                    HM.setPower(0.5);
-                    AM.setPower(1);
-                    HM.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                    AM.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-                    while(HM.isBusy() || AM.isBusy()) {
-                    }
-
-                    HM.setPower(0);
-                    AM.setPower(0);
-                    telemetry.addLine("actuator is " + AM.getCurrentPosition());
-                    telemetry.addLine("hook is " + HM.getCurrentPosition());
-                    telemetry.update();
-
+                    setHoistTarget(-214, 0.75);
+                    setActuatorTarget(6050, 0.65);
                 } else if (gamepad1.dpad_down) {
-                    AM.setTargetPosition(0);
-                    AM.setPower(1);
-                    AM.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-                    while (AM.isBusy()) {
-                    }
-                    AM.setPower(0);
-                } else {
-                    AM.setPower(0);
-                    HM.setPower(0);
+                    setActuatorTarget(0, 0.5);
                 }
-
 
                 if (gamepad1.b) {
                     drone.setPosition(launch);
@@ -128,33 +81,73 @@ public class teleOpCode extends LinearOpMode {
                     drone.setPosition(set);
                 }
 
+                // GamePad 2 Controls:
 
-                /**
-                 * ALL UNDER GAMEPAD 2
-                 */
+                double chainPower = gamepad2.right_stick_y * 0.5;
+                double chainTicks = chain.getCurrentPosition();
+                double slidePower = -gamepad2.left_stick_y;
+                double slideTicks = slide.getCurrentPosition();
 
-                CM.setPower(gamepad2.right_stick_y * halfspeed); //THESE ARE THE OLD GAMEPAD 2 CONTROLS
+                if (chainPower < 0 && chainTicks > -1225) {
+                    chain.setPower(-0.3);
 
-                SM.setPower(gamepad2.left_stick_y * -speed); //THESE ARE THE  OLD GAMEPAD 2 CONTROLS
-
-                if (gamepad1.y) {
-                    SM.setPower(speed);
-                } else if (gamepad1.a) {
-                    SM.setPower(-speed);
+                } else if (chainPower > 0 && chainTicks < -55) {
+                    chain.setPower(0.3);
                 } else {
-                    SM.setPower(0);
+                    chain.setPower(0);
                 }
 
-                if (gamepad2.left_bumper) {         //gamepad1.left_trigger > 0 OLD GAMEPAD 2 CONTROLS
-                    Claw.setPosition(openClaw);
+                if (slidePower > 0 && slideTicks < 1690) {
+                    slide.setPower(0.4);
+                } else if (slidePower < 0 && slideTicks > 0) {
+                    slide.setPower(-0.4);
+                } else {
+                    slide.setPower(0);
                 }
-                if (gamepad2.right_bumper) {       //gamepad1.right_bumper > 0  OLD GAMEPAD 2 CONTROLS
-                    Claw.setPosition(closeClaw);
+                if (gamepad2.left_bumper) {
+                    claw.setPosition(closeClaw);
+                } else if (gamepad2.right_bumper) {
+                    claw.setPosition(openClaw);
+                }
+
                 }
             }
-        }
+
+
+            // METHODS:
+    public void resetChain() {
+        chain.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        chain.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
-}
+    public void resetSlide() {
+        slide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        slide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+    }
+    public void resetHoist() {
+        hoist.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    }
+    public void resetActuator() {
+        actuator.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    }
+    public void setHoistTarget(double targetTicks, double power) {
+        hoist.setTargetPosition((int) targetTicks);
+        hoist.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        hoist.setPower(power);
+        while (hoist.isBusy()) {
+        }
+        hoist.setPower(0);
+    }
+    public void setActuatorTarget(double targetTicks, double power) {
+        actuator.setTargetPosition((int) targetTicks);
+        actuator.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        actuator.setPower(power);
+        while (actuator.isBusy()) {
+        }
+        actuator.setPower(0);
+    }
+
+    }
+
 
 
 

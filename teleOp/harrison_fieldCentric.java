@@ -11,7 +11,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 
-@TeleOp(name = "Field Centric Drive Main")
+@TeleOp(name = "Field Centric Main", group = "Field Centric")
 public class harrison_fieldCentric extends LinearOpMode {
 
     // Declaring Variables
@@ -20,8 +20,9 @@ public class harrison_fieldCentric extends LinearOpMode {
     Servo claw, drone;
     IMU imu;
     IMU.Parameters myIMUparameters;
-    double openClaw = 0.75;
+    double openClaw = 0.65;
     double closeClaw = 0.01;
+    double openMiddlePos = 0.16;
     public static double launch = 0.5;
     public static double set = 0.01;
 
@@ -72,91 +73,131 @@ public class harrison_fieldCentric extends LinearOpMode {
         telemetry.update();
 
         waitForStart();
-        while (opModeIsActive()) {
-            double botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
-            double vertical = -gamepad1.left_stick_y * 1;
-            double horizontal = gamepad1.left_stick_x * 1;
-            double pivot = gamepad1.right_stick_x * 1;
+            while (opModeIsActive()) {
+                double botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
+                double vertical = -gamepad1.left_stick_y * 1;
+                double horizontal = gamepad1.left_stick_x * 1;
+                double pivot = gamepad1.right_stick_x * 1;
 
-            if (gamepad1.right_trigger > 0) {
-                vertical = -gamepad1.left_stick_y * 0.5;
-                horizontal = gamepad1.left_stick_x * 0.5;
-                pivot = gamepad1.right_stick_x * 0.5;
-            }
-
-            // Kinematics (Counter-acting angle of robot's heading)
-            double newVertical = horizontal * Math.sin(-botHeading) + vertical * Math.cos(-botHeading);
-            double newHorizontal = horizontal * Math.cos(-botHeading) - vertical * Math.sin(-botHeading);
-
-            // Setting Field Centric Drive
-            FL.setPower(newVertical + newHorizontal + pivot);
-            FR.setPower(newVertical - newHorizontal - pivot);
-            BL.setPower(newVertical - newHorizontal + pivot);
-            BR.setPower(newVertical + newHorizontal - pivot);
-
-            // Resetting "Forwards" Configuration
-            if (gamepad1.start) {
-                imu.resetYaw();
-            }
-
-            if (gamepad1.dpad_up) {
-                setHoistTarget(-214, 0.75);
-                setActuatorTarget(6050, 0.65);
-            } else if (gamepad1.dpad_down) {
-                setActuatorTarget(0, 0.5);
-            }
-
-            if (gamepad1.b) {
-                drone.setPosition(launch);
-            }
-            if (gamepad1.x) {
-                drone.setPosition(set);
-            }
-
-            // GamePad 2 Controls:
-
-            double chainPower = gamepad2.right_stick_y * 0.5;
-            double chainTicks = chain.getCurrentPosition();
-            double slidePower = -gamepad2.left_stick_y;
-            double slideTicks = slide.getCurrentPosition();
-
-            if (chainPower < 0 && chainTicks > -1225) {
-                chain.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-                chain.setPower(-0.3);
-
-            } else if (chainPower > 0 && chainTicks < -55) {
-                chain.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-                chain.setPower(0.3);
-            } else {
-                chain.setPower(0);
-            }
-
-            if (slidePower > 0 && slideTicks < 1690) {
-                slide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-                slide.setPower(0.4);
-            } else if (slidePower < 0 && slideTicks > 0) {
-                slide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-                slide.setPower(-0.4);
-            } else {
-                slide.setPower(0);
-            }
-            if (gamepad2.left_bumper) {
-                claw.setPosition(closeClaw);
-            } else if (gamepad2.right_bumper) {
-                claw.setPosition(openClaw);
-            }
-
-            if (gamepad2.a) {
-                chain.setTargetPosition(-450);
-                chain.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                chain.setPower(0.5);
-                while (chain.isBusy()) {
-                    FL.setPower(newVertical + newHorizontal + pivot);
-                    FR.setPower(newVertical - newHorizontal - pivot);
-                    BL.setPower(newVertical - newHorizontal + pivot);
-                    BR.setPower(newVertical + newHorizontal - pivot);
+                if (gamepad1.right_trigger > 0) {
+                    vertical = -gamepad1.left_stick_y * 0.5;
+                    horizontal = gamepad1.left_stick_x * 0.5;
+                    pivot = gamepad1.right_stick_x * 0.5;
                 }
-                chain.setPower(1);
+
+                // Kinematics (Counter-acting angle of robot's heading)
+                double newVertical = horizontal * Math.sin(-botHeading) + vertical * Math.cos(-botHeading);
+                double newHorizontal = horizontal * Math.cos(-botHeading) - vertical * Math.sin(-botHeading);
+
+                // Setting Field Centric Drive
+                FL.setPower(newVertical + newHorizontal + pivot);
+                FR.setPower(newVertical - newHorizontal - pivot);
+                BL.setPower(newVertical - newHorizontal + pivot);
+                BR.setPower(newVertical + newHorizontal - pivot);
+
+                // Resetting "Forwards" Configuration
+                if (gamepad1.start) {
+                    imu.resetYaw();
+                }
+
+                if (gamepad1.dpad_up) {
+                    setHoistTarget(-214, 0.75);
+                    setActuatorTarget(6050, 0.65);
+                } else if (gamepad1.dpad_down) {
+                    setActuatorTarget(0, 0.5);
+                }
+
+                if (gamepad1.b) {
+                    drone.setPosition(launch);
+                }
+                if (gamepad1.x) {
+                    drone.setPosition(set);
+                }
+
+                // GamePad 2 Controls:
+
+                double chainPower = gamepad2.right_stick_y * 0.5;
+                double chainTicks = chain.getCurrentPosition();
+                double slidePower = -gamepad2.left_stick_y * 0.9;
+                double slideTicks = slide.getCurrentPosition();
+
+                /* if (chainPower < 0 && chainTicks > -1225) {
+                    chain.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                    chain.setPower(-0.3);
+
+                } else if (chainPower > 0 && chainTicks < -55) {
+                    chain.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                    chain.setPower(0.3);
+                } else {
+                    chain.setPower(0);
+                }
+
+                 */
+
+                telemetry.addLine("Chain Ticks" + chainTicks + ", Chain Power:," + chainPower);
+                telemetry.addLine("Slide Ticks" + slideTicks + ", Slide Power:," + slidePower);
+                telemetry.update();
+
+                if (chainPower < 0 && chainTicks > -1225) { // put chain down if -1224 or less (MAX LIMIT)
+                    chain.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                    chain.setPower(-0.3);
+                } else if (chainPower > 0 && chainTicks < -55) { // put chain up if -56 or more (LOWEST LIMIT)
+                    chain.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                    chain.setPower(0.3);
+                } else if (chainTicks <= -500 && chainTicks >= -1000 && slideTicks >= 190) { // if between -501 and -999, counteract ch gravity if the slides are extended 300 ticks (SCORING RANGE)
+                    chain.setPower(0.09);
+                } else { // NO CONTROL:
+                    chain.setPower(0);
+                }
+
+                if (slidePower > 0 && slideTicks < 1690) { // if ticks 1689 or less --> bring slides up (MAX RANGE)
+                    slide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                    slide.setPower(0.4);
+                } else if (slidePower < 0 && slideTicks >= 0) { // LOWEST RANGE
+                    slide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                    slide.setPower(-0.4);
+                } else if (slideTicks >= 80 && slideTicks <= 1690) { // SLIDE RANGE
+                    slide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                    slide.setPower(0.05);
+                } else { // NO CONTROL:
+                    slide.setPower(0);
+                }
+
+
+
+                /* if (slidePower > 0 && slideTicks < 1690) {
+                    slide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                    slide.setPower(0.4);
+                } else if (slidePower < 0 && slideTicks > 0) {
+                    slide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                    slide.setPower(-0.4);
+                } else if (slideTicks == 0) {
+                    slide.setPower(0);
+                } else {
+                    slide.setPower(0.08);
+                }
+
+                 */
+                if (gamepad2.left_bumper) {
+                    claw.setPosition(closeClaw);
+                } else if (gamepad2.right_bumper) {
+                    claw.setPosition(openClaw);
+                } else if (gamepad2.b) {
+                    claw.setPosition(openMiddlePos);
+                }
+
+
+                if (gamepad2.a) {
+                    chain.setTargetPosition(-450);
+                    chain.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    chain.setPower(0.5);
+                    while (chain.isBusy()) {
+                        FL.setPower(newVertical + newHorizontal + pivot);
+                        FR.setPower(newVertical - newHorizontal - pivot);
+                        BL.setPower(newVertical - newHorizontal + pivot);
+                        BR.setPower(newVertical + newHorizontal - pivot);
+                    }
+                    chain.setPower(1);
 
                     /* slide.setTargetPosition(770);
                     slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -165,9 +206,9 @@ public class harrison_fieldCentric extends LinearOpMode {
                     }
 
                      */
-            }
+                }
 
-        }
+            }
     }
     public void resetChain() {
         chain.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -211,3 +252,10 @@ public class harrison_fieldCentric extends LinearOpMode {
     }
 
 }
+
+
+
+
+
+
+

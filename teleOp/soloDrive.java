@@ -9,8 +9,9 @@ import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.teamcode.harrison.robotSample;
 
-@TeleOp(name = "Field Centric Solo")
+@TeleOp(name = "Solo Field Centric", group = "Field Centric")
 public class soloDrive extends LinearOpMode {
     DcMotor FR, FL, BR, BL;
     DcMotor actuator, slide, chain, hoist;
@@ -106,24 +107,28 @@ public class soloDrive extends LinearOpMode {
             double chainTicks = chain.getCurrentPosition();
             double slideTicks = slide.getCurrentPosition();
 
-            if (chainPower < 0 && chainTicks > -1225) {
+            if (chainPower < 0 && chainTicks > -1225) { // put chain down if -1224 or less (MAX LIMIT)
                 chain.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                 chain.setPower(-0.3);
-
-            } else if (chainPower > 0 && chainTicks < -55) {
+            } else if (chainPower > 0 && chainTicks < -55) { // put chain up if -56 or more (LOWEST LIMIT)
                 chain.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                 chain.setPower(0.3);
-            } else {
+            } else if (chainTicks <= -500 && chainTicks >= -1000 && slideTicks >= 190) { // if between -501 and -999, counteract ch gravity if the slides are extended 300 ticks (SCORING RANGE)
+                chain.setPower(0.09);
+            } else { // NO CONTROL:
                 chain.setPower(0);
             }
 
-            if (slidesUp > 0 && slideTicks < 1690) {
+            if (slidesUp > 0 && slideTicks < 1690) { // if ticks 1689 or less --> bring slides up (MAX RANGE)
                 slide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                 slide.setPower(0.4);
-            } else if (slidesDown > 0 && slideTicks > 0) {
+            } else if (slidesDown > 0 && slideTicks >= 0) { // LOWEST RANGE
                 slide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                 slide.setPower(-0.4);
-            } else {
+            } else if (slideTicks >= 80 && slideTicks <= 1690) { // SLIDE RANGE
+                slide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                slide.setPower(0.05);
+            } else { // NO CONTROL:
                 slide.setPower(0);
             }
 
