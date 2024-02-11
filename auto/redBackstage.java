@@ -74,7 +74,7 @@ public class redBackstage extends LinearOpMode {
 
     public static double redLeft = 0.0;
     public static double redMid = 3.0;
-    public static double redRight = 3.0;
+    public static double redRight = 6.0;
     public static double OPEN_CLAW = 0.75;
     public static double CLOSE_CLAW = 0.01;
 
