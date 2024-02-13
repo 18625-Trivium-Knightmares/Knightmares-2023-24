@@ -37,10 +37,9 @@ public class redBackstage extends LinearOpMode {
     public static double LEFT_SPIKEY = -35.0;
     public static double LEFT_SPIKE_HEADING = 90.0;
     public static double LEFT_SPIKE_TANGENT = 180.0;
-    public static double SPIKE_IT = 16.0;
-    public static double LEFT_BACKX = 50.0;
+    public static double LEFT_BACKX = 41.0;
     public static double LEFT_BACKY = -10.0;
-    public static double LEFT_BACK_HEADING = 2.0;
+    public static double LEFT_BACK_HEADING = 10.0;
 
     public static double MID_SPIKEX = 5.0;
     public static double MID_SPIKEY = -28.0;
@@ -48,18 +47,18 @@ public class redBackstage extends LinearOpMode {
     public static double MID_BACKUPX = 8.0;
     public static double MID_BACKUPY = -45.0;
     public static double MID_BACKUP_TANGENT = 0.0;
-    public static double MID_BACKDROPX = 50.5;
-    public static double MID_BACKDROPY = -26.0;
+    public static double MID_BACKDROPX = 49.5;
+    public static double MID_BACKDROPY = -24.0;
     public static double MID_BACKDROP_TANGENT = 0.0;
 
-    public static double RIGHT_SPIKEX = 22.0;
+    public static double RIGHT_SPIKEX = 15.0;
     public static double RIGHT_SPIKEY = -31.5;
     public static double RIGHT_SPIKE_TANGENT = 90.0;
     public static double RIGHT_BACKUPX = 22.0;
     public static double RIGHT_BACKUPY = -45.0;
     public static double RIGHT_BACKUP_TANGENT = 0.0;
-    public static double RIGHT_BACKDROPX = 48.0;
-    public static double RIGHT_BACKDROPY = -30;
+    public static double RIGHT_BACKDROPX = 50.0;
+    public static double RIGHT_BACKDROPY = -38;
     public static double RIGHT_BACKDROP_TANGENT = 0.0;
 
     public static double slowerVelocity = 28.0;
@@ -72,9 +71,9 @@ public class redBackstage extends LinearOpMode {
     Servo claw, drone;
     OpenCvWebcam webcam = null;
 
-    public static double redLeft = 0.0;
-    public static double redMid = 3.0;
-    public static double redRight = 6.0;
+    public static double redLeft = -0.5;
+    public static double redMid = 0.0;
+    public static double redRight = 3.0;
     public static double OPEN_CLAW = 0.75;
     public static double CLOSE_CLAW = 0.01;
 
@@ -96,13 +95,6 @@ public class redBackstage extends LinearOpMode {
 
         Trajectory LEFT_SPIKE = drive.trajectoryBuilder(new Pose2d(STARTX, STARTY, Math.toRadians(START_HEADING)))
                 .splineToLinearHeading(new Pose2d(LEFT_SPIKEX, LEFT_SPIKEY, Math.toRadians(LEFT_SPIKE_HEADING)), Math.toRadians(LEFT_SPIKE_TANGENT))
-                .addTemporalMarker(2, () -> {
-                    chain.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                    chain.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                    chain.setTargetPosition(-630);
-                    chain.setPower(0.2);
-                    chain.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                })
                 .build();
 
         Trajectory LEFT_BACK = drive.trajectoryBuilder(LEFT_SPIKE.end())
@@ -110,24 +102,9 @@ public class redBackstage extends LinearOpMode {
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .build();
 
-        /*Trajectory SPIKED = drive.trajectoryBuilder(LEFT_SPIKE.end())
-                .strafeLeft(SPIKE_IT)
-                .build();
-
-        Trajectory LEFT_BACKDROP = drive.trajectoryBuilder(SPIKED.end())
-                .lineToLinearHeading(new Pose2d(LEFT_BACKX, LEFT_BACKY, Math.toRadians(LEFT_BACK_HEADING)))
-                .build();*/
-
         Trajectory MID_SPIKE = drive.trajectoryBuilder(new Pose2d(STARTX, STARTY, Math.toRadians(START_HEADING)))
                 .lineToLinearHeading(new Pose2d(MID_SPIKEX, MID_SPIKEY, Math.toRadians(MID_SPIKE_HEADING)), SampleMecanumDrive.getVelocityConstraint(slowerVelocity, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                .addTemporalMarker(2, () -> {
-                    chain.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                    chain.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                    chain.setTargetPosition(-630);
-                    chain.setPower(0.2);
-                    chain.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                })
                 .splineToConstantHeading(new Vector2d(MID_BACKUPX, MID_BACKUPY), Math.toRadians(MID_BACKUP_TANGENT), SampleMecanumDrive.getVelocityConstraint(slowerVelocity, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .splineToConstantHeading(new Vector2d(MID_BACKDROPX, MID_BACKDROPY), Math.toRadians(MID_BACKDROP_TANGENT), SampleMecanumDrive.getVelocityConstraint(slowerVelocity, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
@@ -135,18 +112,12 @@ public class redBackstage extends LinearOpMode {
                 .build();
 
         Trajectory RIGHT_SPIKE = drive.trajectoryBuilder(new Pose2d(STARTX, STARTY, Math.toRadians(START_HEADING)))
-                .splineToConstantHeading(new Vector2d(RIGHT_SPIKEX, RIGHT_SPIKEY), Math.toRadians(RIGHT_SPIKE_TANGENT))
-
-                .addTemporalMarker(2, () -> {
-                    chain.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                    chain.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                    chain.setTargetPosition(-500);
-                    chain.setPower(0.2);
-                    chain.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                })
-
-                .splineToConstantHeading(new Vector2d(RIGHT_BACKUPX, RIGHT_BACKUPY), Math.toRadians(RIGHT_BACKUP_TANGENT))
-                .splineToConstantHeading(new Vector2d(RIGHT_BACKDROPX, RIGHT_BACKDROPY), Math.toRadians(RIGHT_BACKDROP_TANGENT))
+                .splineToConstantHeading(new Vector2d(RIGHT_SPIKEX, RIGHT_SPIKEY), Math.toRadians(RIGHT_SPIKE_TANGENT), SampleMecanumDrive.getVelocityConstraint(slowerVelocity, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
+                .splineToConstantHeading(new Vector2d(RIGHT_BACKUPX, RIGHT_BACKUPY), Math.toRadians(RIGHT_BACKUP_TANGENT), SampleMecanumDrive.getVelocityConstraint(slowerVelocity, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
+                .splineToConstantHeading(new Vector2d(RIGHT_BACKDROPX, RIGHT_BACKDROPY), Math.toRadians(RIGHT_BACKDROP_TANGENT), SampleMecanumDrive.getVelocityConstraint(slowerVelocity, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .build();
 
         // CAMERA
@@ -182,17 +153,43 @@ public class redBackstage extends LinearOpMode {
         switch (randomization) {
             case RIGHT:
                 drive.followTrajectory(RIGHT_SPIKE);
+                chain.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                chain.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                chain.setTargetPosition(-950);
+                chain.setPower(0.5);
+                chain.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                while (chain.isBusy()) {
+                }
+                chain.setPower(0);
                 claw.setPosition(OPEN_CLAW);
                 break;
 
             case MIDDLE:
-                drive.followTrajectory(MID_SPIKE);
+                drive.followTrajectory(MID_SPIKE);chain.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+                chain.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                chain.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                chain.setTargetPosition(-950);
+                chain.setPower(0.5);
+                chain.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                while (chain.isBusy()) {
+                }
+                chain.setPower(0);
                 claw.setPosition(OPEN_CLAW);
                 break;
 
             case LEFT:
                 drive.followTrajectory(LEFT_SPIKE);
-                drive.followTrajectory(LEFT_BACK);
+                drive.followTrajectory(LEFT_BACK);chain.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+                chain.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                chain.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                chain.setTargetPosition(-950);
+                chain.setPower(0.5);
+                chain.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                while (chain.isBusy()) {
+                }
+                chain.setPower(0);
                 claw.setPosition(OPEN_CLAW);
                 break;
 
