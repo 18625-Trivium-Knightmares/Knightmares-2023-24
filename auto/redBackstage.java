@@ -76,7 +76,9 @@ public class redBackstage extends LinearOpMode {
     public static double redRight = 3.0;
     public static double OPEN_CLAW = 0.75;
     public static double CLOSE_CLAW = 0.01;
-
+    public double valLeft;
+    public double valMid;
+    public double valRight;
     public enum Randomization {
         RIGHT,
         MIDDLE,
@@ -144,9 +146,38 @@ public class redBackstage extends LinearOpMode {
             }
         });
 
+        double ogValLeft = valLeft;
+        double ogValMid = valMid;
+        double ogValRight = valRight;
+
+        telemetry.addLine("ready to start");
+        telemetry.update();
+
         claw.setPosition(CLOSE_CLAW);
 
         waitForStart();
+
+        double nwValLeft = valLeft - ogValLeft;
+        double nwValMid = valMid - ogValMid + 1;
+        double nwValRight = valRight - ogValRight;
+
+        if(nwValRight < nwValLeft && nwValRight < nwValMid ) {
+            telemetry.addLine("It is on right");
+            randomization = Randomization.RIGHT;
+        } else if (nwValLeft < nwValRight && nwValLeft < nwValMid) {
+            telemetry.addLine("It is on left");
+            randomization = Randomization.LEFT;
+        } else if (nwValMid < nwValLeft && nwValMid < nwValRight) {
+            telemetry.addLine("It is on middle");
+            randomization = Randomization.MIDDLE;
+        } else {
+            telemetry.addLine("It is on middle for now ig");
+            randomization = Randomization.MIDDLE;
+        }
+        telemetry.addLine("left is: " + String.valueOf(nwValLeft));
+        telemetry.addLine("mid is: " + String.valueOf(nwValMid));
+        telemetry.addLine("right is: " + String.valueOf(nwValRight));
+        telemetry.update();
 
         webcam.stopStreaming();
 
@@ -165,8 +196,9 @@ public class redBackstage extends LinearOpMode {
                 break;
 
             case MIDDLE:
-                drive.followTrajectory(MID_SPIKE);chain.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                drive.followTrajectory(MID_SPIKE);
 
+                chain.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 chain.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 chain.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                 chain.setTargetPosition(-950);
@@ -180,7 +212,8 @@ public class redBackstage extends LinearOpMode {
 
             case LEFT:
                 drive.followTrajectory(LEFT_SPIKE);
-                drive.followTrajectory(LEFT_BACK);chain.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                drive.followTrajectory(LEFT_BACK);
+                chain.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
                 chain.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 chain.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -200,10 +233,6 @@ public class redBackstage extends LinearOpMode {
             default:
 
         }
-
-
-
-
     }
 
     /**
@@ -225,7 +254,6 @@ public class redBackstage extends LinearOpMode {
 
         public Mat processFrame(Mat input) {
             Imgproc.cvtColor(input, YCbCr, Imgproc.COLOR_RGB2YCrCb);
-            telemetry.addLine("pipeline running");
 
             Rect leftRect = new Rect(1, 178, 150, 120);
             Rect midRec = new Rect(244, 178, 150, 120);
@@ -248,27 +276,13 @@ public class redBackstage extends LinearOpMode {
             Scalar midavg = Core.mean(midCrop);
             Scalar rightavg = Core.mean(rightCrop);
 
-            leftavgfin = Math.round((leftavg.val[0]) + redLeft);
-            midavgfin = Math.round((midavg.val[0]) + redMid);
-            rightavgfin = Math.round((rightavg.val[0]) + redRight);
+            leftavgfin = leftavg.val[0];
+            midavgfin = midavg.val[0];
+            rightavgfin = rightavg.val[0];
 
-            if (rightavgfin < leftavgfin && rightavgfin < midavgfin) {
-                telemetry.addLine("It is on the right side");
-                randomization = Randomization.RIGHT;
-            } else if (leftavgfin < rightavgfin && leftavgfin < midavgfin) {
-                telemetry.addLine("It is on the left side");
-                randomization = Randomization.LEFT;
-            } else if (midavgfin < rightavgfin && midavgfin < leftavgfin){
-                telemetry.addLine("It is in the middle");
-                randomization = Randomization.MIDDLE;
-            } else {
-                telemetry.addLine("I guess we're going for the middle");
-                randomization = Randomization.MIDDLE;
-            }
-            telemetry.addLine("left is: " + String.valueOf(leftavgfin));
-            telemetry.addLine("mid is: " + String.valueOf(midavgfin));
-            telemetry.addLine("right is: " + String.valueOf(rightavgfin));
-            telemetry.update();
+            valLeft = leftavgfin;
+            valMid = midavgfin;
+            valRight = rightavgfin;
 
             return outPut;
         }
