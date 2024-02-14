@@ -33,15 +33,15 @@ public class blueBackstage extends LinearOpMode {
     public static double STARTX = 11.67;
     public static double STARTY = 61.5;
     public static double START_HEADING = 180.0;
-    public static double LEFT_SPIKEX = 15.0;
-    public static double LEFT_SPIKEY = 31.5;
+    public static double LEFT_SPIKEX = 22.0;
+    public static double LEFT_SPIKEY = 31.0;
 //    public static double LEFT_SPIKE_HEADING = -90.0;
 //    public static double LEFT_SPIKE_TANGENT = 180.0;
-    public static double LEFT_BACKUPX = 15.0;
+    public static double LEFT_BACKUPX = 22.0;
     public static double LEFT_BACKUPY = 50.0;
     public static double LEFT_BACKUP_HEADING = 180.0;
-    public static double LEFT_BACKDROPX = 50.0;
-    public static double LEFT_BACKDROPY = 38.0;
+    public static double LEFT_BACKDROPX = 58.0;
+    public static double LEFT_BACKDROPY = 42.0;
     public static double LEFT_BACKDROP_HEADING = 0.0;
     public static double MID_SPIKEX = 11.67;
     public static double MID_SPIKEY = 20.0;
@@ -59,7 +59,7 @@ public class blueBackstage extends LinearOpMode {
     public static double RIGHT_SPIKE_HEADER = 90.0;
     public static double RIGHT_SPIKE_TANGENT = 180.0;
     public static double RIGHT_BACKDROPX = 58.0;
-    public static double RIGHT_BACKDROPY = 25.0;
+    public static double RIGHT_BACKDROPY = 35.0;
     public static double RIGHT_BACKDROP_HEADER = 0.0;
 
     public static double slowerVelocity = 28.0;
@@ -114,7 +114,7 @@ public class blueBackstage extends LinearOpMode {
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .build();
 
-        Trajectory MID_END = drive.trajectoryBuilder(MID_SPIKE.end())
+        Trajectory MID_END = drive.trajectoryBuilder(MID_SPIKE.end(),  true)
                 .splineToLinearHeading(new Pose2d(MID_BACKDROPX, MID_BACKDROPY, Math.toRadians(MID_BACKDROP_HEADER)), Math.toRadians(MID_BACKDROP_TANGENT), SampleMecanumDrive.getVelocityConstraint(slowerVelocity, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .build();
