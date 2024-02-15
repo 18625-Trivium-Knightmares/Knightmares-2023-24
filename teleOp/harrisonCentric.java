@@ -10,12 +10,9 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
-
-@TeleOp(name = "Field Centric Main", group = "realTele")
-public class harrison_fieldCentric extends LinearOpMode {
-
+@TeleOp(name = "Harrison Preference", group = "4Fun")
+public class harrisonCentric extends LinearOpMode {
     // Declaring Variables
-
     DcMotor FR, FL, BR, BL;
     DcMotor actuator, slide, chain, hoist;
     Servo claw, drone;
@@ -24,12 +21,14 @@ public class harrison_fieldCentric extends LinearOpMode {
     double openClaw = 0.45;
     double openMiddlePos = 0.175;
     double closeClaw = 0.05;
-    double secondMiddlePos = 0.185;
+    double secondMiddlePos = 0.18;
     public static double launch = 0.5;
     public static double set = 0.01;
 
     @Override
     public void runOpMode() throws InterruptedException {
+        // Configuring Electronics;
+        // Chassis
         FR = hardwareMap.get(DcMotor.class, "rightFront");
         FL = hardwareMap.get(DcMotor.class, "leftFront");
         BR = hardwareMap.get(DcMotor.class, "rightBack");
@@ -74,7 +73,7 @@ public class harrison_fieldCentric extends LinearOpMode {
         telemetry.addData("NOTE", "Make sure to reset the positions of the chain, actuator, hoist, and slides!");
         telemetry.update();
 
-
+        waitForStart();
         while (opModeIsActive()) {
             fieldCentric();
 
@@ -85,7 +84,7 @@ public class harrison_fieldCentric extends LinearOpMode {
 
             if (gamepad1.dpad_up) {
                 setHoistTarget(-214, 0.75);
-                setActuatorTarget(6050, 0.65);
+                setActuatorTarget(6045, 0.65);
             } else if (gamepad1.dpad_down) {
                 setActuatorTarget(0, 0.5);
             }
@@ -129,8 +128,8 @@ public class harrison_fieldCentric extends LinearOpMode {
 
         }
 
-
     }
+
 
     public void resetChain() {
         chain.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -172,14 +171,16 @@ public class harrison_fieldCentric extends LinearOpMode {
 
     public void fieldCentric() {
         double botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
+
         double vertical = -gamepad1.left_stick_y * 1;
         double horizontal = gamepad1.left_stick_x * 1;
         double pivot = gamepad1.right_stick_x * 1;
+        double denominator = Math.max(Math.abs(vertical) + Math.abs(horizontal) + Math.abs(pivot), 1);
 
         if (gamepad1.right_trigger > 0) {
             vertical = -gamepad1.left_stick_y * 0.5;
             horizontal = gamepad1.left_stick_x * 0.5;
-            pivot = gamepad1.right_stick_x * 0.5;
+            pivot = gamepad1.right_stick_x * 0.4;
         }
 
         // Kinematics (Counter-acting angle of robot's heading)
@@ -187,10 +188,10 @@ public class harrison_fieldCentric extends LinearOpMode {
         double newHorizontal = horizontal * Math.cos(-botHeading) - vertical * Math.sin(-botHeading);
 
         // Setting Field Centric Drive
-        FL.setPower(newVertical + newHorizontal + pivot);
-        FR.setPower(newVertical - newHorizontal - pivot);
-        BL.setPower(newVertical - newHorizontal + pivot);
-        BR.setPower(newVertical + newHorizontal - pivot);
+        FL.setPower((newVertical + newHorizontal + pivot)/denominator);
+        FR.setPower((newVertical - newHorizontal - pivot)/denominator);
+        BL.setPower((newVertical - newHorizontal + pivot)/denominator);
+        BR.setPower((newVertical + newHorizontal - pivot)/denominator);
     }
 
     public void fieldCentricSlow() {
@@ -213,7 +214,6 @@ public class harrison_fieldCentric extends LinearOpMode {
     public void chainExitEncoders() {
         chain.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
-
     public void slideExitEncoders() {
         slide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
@@ -253,12 +253,7 @@ public class harrison_fieldCentric extends LinearOpMode {
         } else { // NO CONTROL:
             slide.setPower(0);
         }
-
     }
 }
-
-
-
-
 
 
