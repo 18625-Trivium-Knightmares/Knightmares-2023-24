@@ -1,7 +1,6 @@
-package org.firstinspires.ftc.teamcode.extra;
+package org.firstinspires.ftc.teamcode.teleOp;
 
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -12,21 +11,19 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 
-@TeleOp(name = "Field Centric Main", group = "extra")
-@Disabled
+@TeleOp(name = "General Field Centric", group = "TeleOp")
 public class harrison_fieldCentric extends LinearOpMode {
 
     // Declaring Variables
-
     DcMotor FR, FL, BR, BL;
     DcMotor actuator, slide, chain, hoist;
     Servo claw, drone;
     IMU imu;
     IMU.Parameters myIMUparameters;
     double openClaw = 0.45;
-    double openMiddlePos = 0.175;
+    double openbackUpPos = 0.2;
     double closeClaw = 0.05;
-    double secondMiddlePos = 0.185;
+    double secondMiddlePos = 0.18;
     public static double launch = 0.5;
     public static double set = 0.01;
 
@@ -59,8 +56,6 @@ public class harrison_fieldCentric extends LinearOpMode {
         resetActuator();
         resetHoist();
 
-        // slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
         // IMU
         imu = hardwareMap.get(IMU.class, "imu"); // Initializing IMU in Drivers Hub
         // Reconfiguring IMU orientation
@@ -76,7 +71,7 @@ public class harrison_fieldCentric extends LinearOpMode {
         telemetry.addData("NOTE", "Make sure to reset the positions of the chain, actuator, hoist, and slides!");
         telemetry.update();
 
-
+        waitForStart();
         while (opModeIsActive()) {
             fieldCentric();
 
@@ -86,10 +81,10 @@ public class harrison_fieldCentric extends LinearOpMode {
             }
 
             if (gamepad1.dpad_up) {
-                setHoistTarget(-214, 0.75);
-                setActuatorTarget(6050, 0.65);
+                setHoistTarget(-192, 0.75);
+                setActuatorTarget(6020, 0.65);
             } else if (gamepad1.dpad_down) {
-                setActuatorTarget(0, 0.5);
+                setActuatorTarget(0, 0.6);
             }
 
             if (gamepad1.b) {
@@ -98,6 +93,7 @@ public class harrison_fieldCentric extends LinearOpMode {
             if (gamepad1.x) {
                 drone.setPosition(set);
             }
+
 
             // GamePad 2 Controls:
 
@@ -112,13 +108,7 @@ public class harrison_fieldCentric extends LinearOpMode {
                 while (chain.isBusy()) {
                     fieldCentricSlow();
                 }
-                slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                slide.setTargetPosition(500);
-                slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                slide.setPower(0.5);
-                while (slide.isBusy()) {
-                    fieldCentricSlow();
-                }
+
             }
 
             if (gamepad2.left_bumper) {
@@ -127,10 +117,11 @@ public class harrison_fieldCentric extends LinearOpMode {
                 claw.setPosition(openClaw);
             } else if (gamepad2.b) {
                 claw.setPosition(secondMiddlePos);
+            } else if (gamepad2.a) {
+                claw.setPosition(openbackUpPos);
             }
 
         }
-
 
     }
 
@@ -258,6 +249,7 @@ public class harrison_fieldCentric extends LinearOpMode {
 
     }
 }
+
 
 
 
