@@ -58,7 +58,7 @@ public class redBackstage extends LinearOpMode {
     public static double RIGHT_BACKUPY = -45.0;
     public static double RIGHT_BACKUP_TANGENT = 0.0;
     public static double RIGHT_BACKDROPX = 50.0;
-    public static double RIGHT_BACKDROPY = -38;
+    public static double RIGHT_BACKDROPY = -38.0;
     public static double RIGHT_BACKDROP_TANGENT = 0.0;
 
     public static double slowerVelocity = 28.0;
@@ -71,10 +71,7 @@ public class redBackstage extends LinearOpMode {
     Servo claw, drone;
     OpenCvWebcam webcam = null;
 
-    public static double redLeft = -0.5;
-    public static double redMid = 0.0;
-    public static double redRight = 3.0;
-    public static double OPEN_CLAW = 0.75;
+    public static double OPEN_CLAW = 0.5;
     public static double CLOSE_CLAW = 0.01;
     public double valLeft;
     public double valMid;
