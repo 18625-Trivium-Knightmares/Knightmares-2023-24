@@ -19,7 +19,7 @@ public class harrisonCentric extends LinearOpMode {
     IMU imu;
     IMU.Parameters myIMUparameters;
     double openClaw = 0.45;
-    double openMiddlePos = 0.175;
+    double openbackUpPos = 0.2;
     double closeClaw = 0.05;
     double secondMiddlePos = 0.18;
     public static double launch = 0.5;
@@ -56,8 +56,6 @@ public class harrisonCentric extends LinearOpMode {
         resetActuator();
         resetHoist();
 
-        // slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
         // IMU
         imu = hardwareMap.get(IMU.class, "imu"); // Initializing IMU in Drivers Hub
         // Reconfiguring IMU orientation
@@ -75,6 +73,7 @@ public class harrisonCentric extends LinearOpMode {
 
         waitForStart();
         while (opModeIsActive()) {
+            
             fieldCentric();
 
             // Resetting "Forwards" Configuration
@@ -83,10 +82,10 @@ public class harrisonCentric extends LinearOpMode {
             }
 
             if (gamepad1.dpad_up) {
-                setHoistTarget(-214, 0.75);
-                setActuatorTarget(6045, 0.65);
+                setHoistTarget(-192, 0.75);
+                setActuatorTarget(6020, 0.65);
             } else if (gamepad1.dpad_down) {
-                setActuatorTarget(0, 0.5);
+                setActuatorTarget(0, 0.6);
             }
 
             if (gamepad1.b) {
@@ -95,6 +94,7 @@ public class harrisonCentric extends LinearOpMode {
             if (gamepad1.x) {
                 drone.setPosition(set);
             }
+
 
             // GamePad 2 Controls:
 
@@ -109,13 +109,7 @@ public class harrisonCentric extends LinearOpMode {
                 while (chain.isBusy()) {
                     fieldCentricSlow();
                 }
-                slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                slide.setTargetPosition(500);
-                slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                slide.setPower(0.5);
-                while (slide.isBusy()) {
-                    fieldCentricSlow();
-                }
+
             }
 
             if (gamepad2.left_bumper) {
@@ -124,12 +118,13 @@ public class harrisonCentric extends LinearOpMode {
                 claw.setPosition(openClaw);
             } else if (gamepad2.b) {
                 claw.setPosition(secondMiddlePos);
+            } else if (gamepad2.a) {
+                claw.setPosition(openbackUpPos);
             }
 
-        }
+            }
 
     }
-
 
     public void resetChain() {
         chain.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -180,7 +175,7 @@ public class harrisonCentric extends LinearOpMode {
         if (gamepad1.right_trigger > 0) {
             vertical = -gamepad1.left_stick_y * 0.5;
             horizontal = gamepad1.left_stick_x * 0.5;
-            pivot = gamepad1.right_stick_x * 0.4;
+            pivot = gamepad1.right_stick_x * 0.6;
         }
 
         // Kinematics (Counter-acting angle of robot's heading)
@@ -198,7 +193,7 @@ public class harrisonCentric extends LinearOpMode {
         double botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
         double vertical = -gamepad1.left_stick_y * 0.4;
         double horizontal = gamepad1.left_stick_x * 0.4;
-        double pivot = gamepad1.right_stick_x * 0.4;
+        double pivot = gamepad1.right_stick_x * 0.5;
 
         // Kinematics (Counter-acting angle of robot's heading)
         double newVertical = horizontal * Math.sin(-botHeading) + vertical * Math.cos(-botHeading);
@@ -255,5 +250,6 @@ public class harrisonCentric extends LinearOpMode {
         }
     }
 }
+
 
 
