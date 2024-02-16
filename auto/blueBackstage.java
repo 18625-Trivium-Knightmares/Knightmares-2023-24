@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.auto;
 
+import androidx.annotation.NonNull;
+
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
@@ -33,24 +35,22 @@ public class blueBackstage extends LinearOpMode {
     public static double STARTX = 11.67;
     public static double STARTY = 61.5;
     public static double START_HEADING = 180.0;
-    public static double LEFT_SPIKEX = 22.0;
+    public static double LEFT_SPIKEX = 30.0;
     public static double LEFT_SPIKEY = 31.0;
-//    public static double LEFT_SPIKE_HEADING = -90.0;
-//    public static double LEFT_SPIKE_TANGENT = 180.0;
-    public static double LEFT_BACKUPX = 22.0;
+    public static double LEFT_BACKUPX = 30.0;
     public static double LEFT_BACKUPY = 50.0;
     public static double LEFT_BACKUP_HEADING = 180.0;
-    public static double LEFT_BACKDROPX = 58.0;
+    public static double LEFT_BACKDROPX = 59.0;
     public static double LEFT_BACKDROPY = 42.0;
     public static double LEFT_BACKDROP_HEADING = 0.0;
-    public static double MID_SPIKEX = 11.67;
-    public static double MID_SPIKEY = 20.0;
+    public static double MID_SPIKEX = 25.0;
+    public static double MID_SPIKEY = 30.0;
     public static double MID_SPIKE_HEADING = 180.0;
-    public static double MID_BACKUPX = 8.0;
+    public static double MID_BACKUPX = 25.0;
     public static double MID_BACKUPY = 45.0;
     public static double MID_BACKUP_TANGENT = 0.0;
-    public static double MID_BACKDROPX = 58.0;
-    public static double MID_BACKDROPY = 18.0;
+    public static double MID_BACKDROPX = 65.0;
+    public static double MID_BACKDROPY = 38.0;
     public static double MID_BACKDROP_TANGENT = 0.0;
     public static double MID_BACKDROP_HEADER = 0.0;
 
@@ -58,9 +58,13 @@ public class blueBackstage extends LinearOpMode {
     public static double RIGHT_SPIKEY = 25.0;
     public static double RIGHT_SPIKE_HEADER = 90.0;
     public static double RIGHT_SPIKE_TANGENT = 180.0;
-    public static double RIGHT_BACKDROPX = 58.0;
-    public static double RIGHT_BACKDROPY = 35.0;
+    public static double RIGHT_BACKDROPX = 58.5;
+    public static double RIGHT_BACKDROPY = 21.0;
     public static double RIGHT_BACKDROP_HEADER = 0.0;
+    public static double LEFT_PARKY = 8.0;
+    public static double MID_PARKY = 27.0;
+    public static double RIGHT_PARKY = 40.0;
+
 
     public static double slowerVelocity = 28.0;
 
@@ -70,10 +74,7 @@ public class blueBackstage extends LinearOpMode {
     Servo claw, drone;
     OpenCvWebcam webcam = null;
 
-    public static double blueLeft = -0.5;
-    public static double blueMid = 0.0;
-    public static double blueRight = 3.0;
-    public static double OPEN_CLAW = 0.75;
+    public static double OPEN_CLAW = 0.50;
     public static double CLOSE_CLAW = 0.01;
     public double valLeft;
     public double valMid;
@@ -94,6 +95,7 @@ public class blueBackstage extends LinearOpMode {
 
         claw = hardwareMap.servo.get("Claw");
         chain = hardwareMap.dcMotor.get("ch");
+        slides = hardwareMap.dcMotor.get("Slide");
 
         Trajectory LEFT_SPIKE = drive.trajectoryBuilder(new Pose2d(STARTX, STARTY, Math.toRadians(START_HEADING)))
                 .lineToConstantHeading(new Vector2d(LEFT_SPIKEX, LEFT_SPIKEY), SampleMecanumDrive.getVelocityConstraint(slowerVelocity, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
@@ -107,7 +109,15 @@ public class blueBackstage extends LinearOpMode {
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .build();
 
-        Trajectory MID_SPIKE = drive.trajectoryBuilder(new Pose2d(STARTX, STARTY, Math.toRadians(START_HEADING)))
+        Trajectory LEFT_PARK = drive.trajectoryBuilder(LEFT_END.end(), true)
+                .strafeLeft(LEFT_PARKY)
+                .build();
+
+        Trajectory MID_BACK = drive.trajectoryBuilder(new Pose2d(STARTX, STARTY, Math.toRadians(START_HEADING)))
+                .back(5)
+                .build();
+
+        Trajectory MID_SPIKE = drive.trajectoryBuilder(MID_BACK.end())
                 .lineToLinearHeading(new Pose2d(MID_SPIKEX, MID_SPIKEY, Math.toRadians(MID_SPIKE_HEADING)), SampleMecanumDrive.getVelocityConstraint(slowerVelocity, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .splineToConstantHeading(new Vector2d(MID_BACKUPX, MID_BACKUPY), Math.toRadians(MID_BACKUP_TANGENT), SampleMecanumDrive.getVelocityConstraint(slowerVelocity, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
@@ -119,6 +129,10 @@ public class blueBackstage extends LinearOpMode {
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .build();
 
+        Trajectory MID_PARK = drive.trajectoryBuilder(MID_END.end(), true)
+                .strafeLeft(MID_PARKY)
+                .build();
+
         Trajectory RIGHT_SPIKE = drive.trajectoryBuilder(new Pose2d(STARTX, STARTY, Math.toRadians(START_HEADING)), true)
                 .splineToLinearHeading(new Pose2d(RIGHT_SPIKEX, RIGHT_SPIKEY, Math.toRadians(RIGHT_SPIKE_HEADER)), Math.toRadians(RIGHT_SPIKE_TANGENT), SampleMecanumDrive.getVelocityConstraint(slowerVelocity, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
@@ -127,6 +141,10 @@ public class blueBackstage extends LinearOpMode {
         Trajectory RIGHT_END = drive.trajectoryBuilder(RIGHT_SPIKE.end())
                 .lineToLinearHeading(new Pose2d(RIGHT_BACKDROPX, RIGHT_BACKDROPY, Math.toRadians(RIGHT_BACKDROP_HEADER)), SampleMecanumDrive.getVelocityConstraint(slowerVelocity, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
+                .build();
+
+        Trajectory RIGHT_PARK = drive.trajectoryBuilder(RIGHT_END.end(), true)
+                .strafeLeft(RIGHT_PARKY)
                 .build();
 
         // CAMERA
@@ -200,12 +218,27 @@ public class blueBackstage extends LinearOpMode {
                 while (chain.isBusy()) {
                 }
                 chain.setPower(0);
+                slides.setPower(0.3);
+                sleep(100);
                 claw.setPosition(OPEN_CLAW);
+                slides.setPower(0);
+
+                sleep(500);
+
+                chain.setTargetPosition(0);
+                chain.setPower(0.5);
+                chain.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                while (chain.isBusy()) {
+                }
+                chain.setPower(0);
+
+                drive.followTrajectory(LEFT_PARK);
+
                 break;
 
             case MIDDLE:
+                drive.followTrajectory(MID_BACK);
                 drive.followTrajectory(MID_SPIKE);
-                drive.turn(Math.toRadians(180.0));
                 drive.followTrajectory(MID_END);
 
                 chain.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -217,7 +250,21 @@ public class blueBackstage extends LinearOpMode {
                 while (chain.isBusy()) {
                 }
                 chain.setPower(0);
+                slides.setPower(0.3);
+                sleep(100);
                 claw.setPosition(OPEN_CLAW);
+                slides.setPower(0);
+
+                sleep(500);
+
+                chain.setTargetPosition(0);
+                chain.setPower(0.5);
+                chain.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                while (chain.isBusy()) {
+                }
+                chain.setPower(0);
+
+                drive.followTrajectory(MID_PARK);
                 break;
 
             case LEFT:
@@ -233,7 +280,21 @@ public class blueBackstage extends LinearOpMode {
                 while (chain.isBusy()) {
                 }
                 chain.setPower(0);
+                slides.setPower(0.3);
+                sleep(100);
                 claw.setPosition(OPEN_CLAW);
+                slides.setPower(0);
+
+                sleep(500);
+
+                chain.setTargetPosition(0);
+                chain.setPower(0.5);
+                chain.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                while (chain.isBusy()) {
+                }
+                chain.setPower(0);
+
+                drive.followTrajectory(RIGHT_PARK);
                 break;
 
             case IDK:
@@ -244,6 +305,7 @@ public class blueBackstage extends LinearOpMode {
 
         }
 
+        drive.turn(Math.toRadians(-90.0));
 
 
 
