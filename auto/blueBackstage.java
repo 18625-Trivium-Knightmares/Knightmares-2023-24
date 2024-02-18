@@ -35,7 +35,7 @@ public class blueBackstage extends LinearOpMode {
     public static double STARTX = 11.67;
     public static double STARTY = 61.5;
     public static double START_HEADING = 180.0;
-    public static double LEFT_SPIKEX = 30.0;
+    public static double LEFT_SPIKEX = 28.0;
     public static double LEFT_SPIKEY = 31.0;
     public static double LEFT_BACKUPX = 30.0;
     public static double LEFT_BACKUPY = 50.0;
@@ -44,13 +44,13 @@ public class blueBackstage extends LinearOpMode {
     public static double LEFT_BACKDROPY = 42.0;
     public static double LEFT_BACKDROP_HEADING = 0.0;
     public static double MID_SPIKEX = 25.0;
-    public static double MID_SPIKEY = 30.0;
+    public static double MID_SPIKEY = 27.0;
     public static double MID_SPIKE_HEADING = 180.0;
     public static double MID_BACKUPX = 25.0;
     public static double MID_BACKUPY = 45.0;
     public static double MID_BACKUP_TANGENT = 0.0;
     public static double MID_BACKDROPX = 65.0;
-    public static double MID_BACKDROPY = 38.0;
+    public static double MID_BACKDROPY = 37.0;
     public static double MID_BACKDROP_TANGENT = 0.0;
     public static double MID_BACKDROP_HEADER = 0.0;
 
@@ -59,7 +59,7 @@ public class blueBackstage extends LinearOpMode {
     public static double RIGHT_SPIKE_HEADER = 90.0;
     public static double RIGHT_SPIKE_TANGENT = 180.0;
     public static double RIGHT_BACKDROPX = 58.5;
-    public static double RIGHT_BACKDROPY = 21.0;
+    public static double RIGHT_BACKDROPY = 24.5;
     public static double RIGHT_BACKDROP_HEADER = 0.0;
     public static double LEFT_PARKY = 8.0;
     public static double MID_PARKY = 27.0;
@@ -232,7 +232,7 @@ public class blueBackstage extends LinearOpMode {
                 }
                 chain.setPower(0);
 
-                drive.followTrajectory(LEFT_PARK);
+                drive.followTrajectory(RIGHT_PARK);
 
                 break;
 

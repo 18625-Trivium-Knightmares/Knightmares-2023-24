@@ -126,10 +126,10 @@ public class teleOpCodeLogan extends LinearOpMode {
             if (gamepad1.y) {
                 SM.setPower(speed);
             }else if (gamepad1.a) {
-                 SM.setPower(-speed);
-             } else {
-                 SM.setPower(0);
-             }
+                SM.setPower(-speed);
+            } else {
+                SM.setPower(0);
+            }
             if (gamepad2.left_bumper) {         //gamepad1.left_trigger > 0 OLD GAMEPAD 2 CONTROLS
                 Claw.setPosition(openClaw);
             }

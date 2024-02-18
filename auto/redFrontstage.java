@@ -23,7 +23,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 import org.openftc.easyopencv.OpenCvWebcam;
 
-@Autonomous (group = "AUTO", name = "RED BACKSTAGE")
+@Autonomous (group = "AUTO", name = "RED FRONTSTAGE")
 @Config
 //@Disabled
 public class redFrontstage extends LinearOpMode {
@@ -83,7 +83,7 @@ public class redFrontstage extends LinearOpMode {
 
     public static double redLeft = 0.0;
     public static double redMid = 3.0;
-    public static double redRight = 6.0;
+    public static double redRight = 3.0;
     public static double OPEN_CLAW = 0.75;
     public static double CLOSE_CLAW = 0.01;
 
@@ -112,9 +112,9 @@ public class redFrontstage extends LinearOpMode {
                     chain.setPower(0.2);
                     chain.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 })
-                .splineToConstantHeading(new Vector2d(LEFT_LILX, LEFT_LILY), Math.toRadians(LEFT_LIL_TANGENT))
+                .splineToLinearHeading(new Pose2d(LEFT_LILX, LEFT_LILY, 0), Math.toRadians(LEFT_LIL_TANGENT))
                 .splineToLinearHeading(new Pose2d(LEFT_TRUSSX, LEFT_TRUSSY, Math.toRadians(LEFT_TRUSS_HEADING)), Math.toRadians(LEFT_TRUSS_TANGENT))
-                .splineToConstantHeading(new Vector2d(LEFT_BACKX, LEFT_BACKY), Math.toRadians(LEFT_BACK_TANGENT))
+                .splineToLinearHeading(new Pose2d(LEFT_BACKX, LEFT_BACKY, 0), Math.toRadians(LEFT_BACK_TANGENT))
                 .build();
 
         Trajectory MID_SPIKE = drive.trajectoryBuilder(new Pose2d(STARTX, STARTY, Math.toRadians(START_HEADING)))

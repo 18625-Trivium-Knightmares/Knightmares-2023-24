@@ -73,7 +73,7 @@ public class harrisonCentric extends LinearOpMode {
 
         waitForStart();
         while (opModeIsActive()) {
-            
+
             fieldCentric();
 
             // Resetting "Forwards" Configuration
@@ -122,7 +122,7 @@ public class harrisonCentric extends LinearOpMode {
                 claw.setPosition(openbackUpPos);
             }
 
-            }
+        }
 
     }
 
@@ -250,6 +250,5 @@ public class harrisonCentric extends LinearOpMode {
         }
     }
 }
-
 
 
