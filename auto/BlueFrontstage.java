@@ -1,4 +1,4 @@
 package org.firstinspires.ftc.teamcode.auto;
 
-public class blueFrontstage {
+public class BlueFrontstage {
 }
