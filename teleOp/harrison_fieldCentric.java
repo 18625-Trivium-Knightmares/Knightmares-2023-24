@@ -10,8 +10,10 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
-@TeleOp(name = "Harrison Preference", group = "TeleOp")
-public class harrisonCentric extends LinearOpMode {
+
+@TeleOp(name = "General Field Centric", group = "TeleOp")
+public class harrison_fieldCentric extends LinearOpMode {
+
     // Declaring Variables
     DcMotor FR, FL, BR, BL;
     DcMotor actuator, slide, chain, hoist;
@@ -27,8 +29,6 @@ public class harrisonCentric extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        // Configuring Electronics;
-        // Chassis
         FR = hardwareMap.get(DcMotor.class, "rightFront");
         FL = hardwareMap.get(DcMotor.class, "leftFront");
         BR = hardwareMap.get(DcMotor.class, "rightBack");
@@ -43,12 +43,12 @@ public class harrisonCentric extends LinearOpMode {
 
         // Control Hub Motors
         hoist = hardwareMap.get(DcMotor.class, "hoist");
-        chain = hardwareMap.get(DcMotor.class, "chain");
-        slide = hardwareMap.get(DcMotor.class, "slide");
+        chain = hardwareMap.get(DcMotor.class, "ch");
+        slide = hardwareMap.get(DcMotor.class, "Slide");
         actuator = hardwareMap.get(DcMotor.class, "actuator");
         // Servos
-        claw = hardwareMap.get(Servo.class, "claw");
-        drone = hardwareMap.get(Servo.class, "drone");
+        claw = hardwareMap.get(Servo.class, "Claw");
+        drone = hardwareMap.get(Servo.class, "drones");
 
         // ENCODERS:
         resetSlide();
@@ -73,7 +73,6 @@ public class harrisonCentric extends LinearOpMode {
 
         waitForStart();
         while (opModeIsActive()) {
-
             fieldCentric();
 
             // Resetting "Forwards" Configuration
@@ -86,13 +85,12 @@ public class harrisonCentric extends LinearOpMode {
                 setActuatorTarget(6020, 0.65);
             } else if (gamepad1.dpad_down) {
                 setActuatorTarget(0, 0.6);
-            } else if (gamepad1.dpad_left) {
-                setHoistTarget(0, 0.75);
             }
 
             if (gamepad1.b) {
                 drone.setPosition(launch);
-            } else if (gamepad1.x) {
+            }
+            if (gamepad1.x) {
                 drone.setPosition(set);
             }
 
@@ -167,16 +165,14 @@ public class harrisonCentric extends LinearOpMode {
 
     public void fieldCentric() {
         double botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
-
         double vertical = -gamepad1.left_stick_y * 1;
         double horizontal = gamepad1.left_stick_x * 1;
         double pivot = gamepad1.right_stick_x * 1;
-        double denominator = Math.max(Math.abs(vertical) + Math.abs(horizontal) + Math.abs(pivot), 1);
 
         if (gamepad1.right_trigger > 0) {
             vertical = -gamepad1.left_stick_y * 0.5;
             horizontal = gamepad1.left_stick_x * 0.5;
-            pivot = gamepad1.right_stick_x * 0.6;
+            pivot = gamepad1.right_stick_x * 0.5;
         }
 
         // Kinematics (Counter-acting angle of robot's heading)
@@ -184,17 +180,17 @@ public class harrisonCentric extends LinearOpMode {
         double newHorizontal = horizontal * Math.cos(-botHeading) - vertical * Math.sin(-botHeading);
 
         // Setting Field Centric Drive
-        FL.setPower((newVertical + newHorizontal + pivot)/denominator);
-        FR.setPower((newVertical - newHorizontal - pivot)/denominator);
-        BL.setPower((newVertical - newHorizontal + pivot)/denominator);
-        BR.setPower((newVertical + newHorizontal - pivot)/denominator);
+        FL.setPower(newVertical + newHorizontal + pivot);
+        FR.setPower(newVertical - newHorizontal - pivot);
+        BL.setPower(newVertical - newHorizontal + pivot);
+        BR.setPower(newVertical + newHorizontal - pivot);
     }
 
     public void fieldCentricSlow() {
         double botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
         double vertical = -gamepad1.left_stick_y * 0.4;
         double horizontal = gamepad1.left_stick_x * 0.4;
-        double pivot = gamepad1.right_stick_x * 0.5;
+        double pivot = gamepad1.right_stick_x * 0.4;
 
         // Kinematics (Counter-acting angle of robot's heading)
         double newVertical = horizontal * Math.sin(-botHeading) + vertical * Math.cos(-botHeading);
@@ -210,6 +206,7 @@ public class harrisonCentric extends LinearOpMode {
     public void chainExitEncoders() {
         chain.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
+
     public void slideExitEncoders() {
         slide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
@@ -249,7 +246,12 @@ public class harrisonCentric extends LinearOpMode {
         } else { // NO CONTROL:
             slide.setPower(0);
         }
+
     }
 }
+
+
+
+
 
 
