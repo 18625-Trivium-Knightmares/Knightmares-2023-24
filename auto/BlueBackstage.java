@@ -28,7 +28,7 @@ import org.openftc.easyopencv.OpenCvWebcam;
 @Autonomous (group = "AUTO", name = "BLUE BACKSTAGE")
 @Config
 //@Disabled
-public class blueBackstage extends LinearOpMode {
+public class BlueBackstage extends LinearOpMode {
     /**
      * VARIABLES
      */
